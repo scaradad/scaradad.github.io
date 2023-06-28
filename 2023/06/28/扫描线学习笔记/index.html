@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"scaradad.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Part 0 前言其实很久以前就自己看过扫描线，但是由于水平不够+没搞懂的不去搞所以也就今天才真正弄明白了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="扫描线学习笔记">
+<meta property="og:url" content="http://scaradad.github.io/2023/06/28/%E6%89%AB%E6%8F%8F%E7%BA%BF%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Scarab">
+<meta property="og:description" content="Part 0 前言其实很久以前就自己看过扫描线，但是由于水平不够+没搞懂的不去搞所以也就今天才真正弄明白了。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s1.ax1x.com/2023/06/28/pCwnt5q.png">
+<meta property="article:published_time" content="2023-06-28T15:09:09.000Z">
+<meta property="article:modified_time" content="2023-06-28T15:51:21.670Z">
+<meta property="article:author" content="Scarab">
+<meta property="article:tag" content="blog, C++, OI">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s1.ax1x.com/2023/06/28/pCwnt5q.png">
+
+
+<link rel="canonical" href="http://scaradad.github.io/2023/06/28/%E6%89%AB%E6%8F%8F%E7%BA%BF%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://scaradad.github.io/2023/06/28/%E6%89%AB%E6%8F%8F%E7%BA%BF%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/","path":"2023/06/28/扫描线学习笔记/","title":"扫描线学习笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>扫描线学习笔记 | Scarab</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Scarab</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">下蛋爷的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Part-0-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">Part 0 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Part-1-%E7%AE%97%E6%B3%95%E7%94%A8%E9%80%94"><span class="nav-number">2.</span> <span class="nav-text">Part 1 算法用途</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Part-2-%E7%AE%97%E6%B3%95%E6%80%9D%E6%83%B3"><span class="nav-number">3.</span> <span class="nav-text">Part 2 算法思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Part-3-%E4%BE%8B%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">Part 3 例题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-P5490-%E3%80%90%E6%A8%A1%E6%9D%BF%E3%80%91%E6%89%AB%E6%8F%8F%E7%BA%BF"><span class="nav-number">4.1.</span> <span class="nav-text">1. P5490 【模板】扫描线</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Code"><span class="nav-number">4.1.1.</span> <span class="nav-text">Code</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Scarab"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Scarab</p>
+  <div class="site-description" itemprop="description">横眉冷对长中指，俯首甘为孺牛子</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/scaradad" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;scaradad" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:sobaliuziao@gmail.com" title="E-Mail → mailto:sobaliuziao@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://www.cnblogs.com/tarantula/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;tarantula&#x2F;" rel="noopener" target="_blank">Tarantula</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.cnblogs.com/reliauk/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;reliauk&#x2F;" rel="noopener" target="_blank">Reliauk</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://scaradad.github.io/2023/06/28/%E6%89%AB%E6%8F%8F%E7%BA%BF%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Scarab">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Scarab">
+      <meta itemprop="description" content="横眉冷对长中指，俯首甘为孺牛子">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="扫描线学习笔记 | Scarab">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          扫描线学习笔记
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-06-28 23:09:09 / 修改时间：23:51:21" itemprop="dateCreated datePublished" datetime="2023-06-28T23:09:09+08:00">2023-06-28</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="Part-0-前言"><a href="#Part-0-前言" class="headerlink" title="Part 0 前言"></a>Part 0 前言</h2><p>其实很久以前就自己看过扫描线，但是由于水平不够+没搞懂的不去搞所以也就今天才真正弄明白了。</p>
+<span id="more"></span>
+
+<h2 id="Part-1-算法用途"><a href="#Part-1-算法用途" class="headerlink" title="Part 1 算法用途"></a>Part 1 算法用途</h2><p>解决在坐标轴上一些与图形有关的问题，包括一堆矩形并的面积、周长等等。</p>
+<h2 id="Part-2-算法思想"><a href="#Part-2-算法思想" class="headerlink" title="Part 2 算法思想"></a>Part 2 算法思想</h2><p>顾名思义，就是用一条线在坐标轴上扫来扫去。</p>
+<p>以求矩形并的面积为例：</p>
+<p>现在有 $n$ 个矩形，矩形的四个点的 $x$ 和 $y$ 坐标都 $\in [0,10^9]$ 且为整点，问这些矩形并起来的面积（$n\leq 10^5$）。</p>
+<hr>
+<p>有一个思路就是对于每个矩形暴力打标记，然后看被标记的点数，时间复杂度：$O(V^2)$。</p>
+<p>这样做显然是会爆炸的而且坐标还必须是整数。</p>
+<p>考虑优化。</p>
+<hr>
+<p>注意到值域是远大于 $n$ 的，所以可以把矩形四个点的 $x$ 和 $y$ 离散化下来，这样整个坐标轴就被这些离散化下来的横线和竖线给分割成很多个网格，每个网格里的点是否被标记的状态显然是相同的，所以可以像上面那样暴力打标记，时间复杂度：$O(n^2)$。</p>
+<p>像这样：</p>
+<p><img src="https://s1.ax1x.com/2023/06/28/pCwnt5q.png"></p>
+<p>就直接求每个标蓝网格的面积即可</p>
+<hr>
+<p>其实算法可以做得更优，设一个矩形为 $(x_1,y_1)-(x_2,y_2)$，类似于差分，可以把它拆成入边和出边。</p>
+<p>入边表示在 $x_1$ 把 $[y_1,y_2]$ 的覆盖层数 $+1$，出边表示在 $x_2$ 把 $[y_1,y_2]$ 覆盖层数 $-1$，然后依次扫描离散化出来的线，最后被需要计入总答案的就是当前覆盖层数 $\geq 1$ 的线段总长度 $\times$ 当前两条相邻的线截出的长度，直接数据结构维护可以做到 $O(n\log n)$（详细维护方法见例题）。</p>
+<hr>
+<p>上面就是扫描线的流程，也就是把直线离散化然后对于被两条相邻的线截开的矩形用数据结构维护。</p>
+<h2 id="Part-3-例题"><a href="#Part-3-例题" class="headerlink" title="Part 3 例题"></a>Part 3 例题</h2><h3 id="1-P5490-【模板】扫描线"><a href="#1-P5490-【模板】扫描线" class="headerlink" title="1. P5490 【模板】扫描线"></a>1. <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P5490">P5490 【模板】扫描线</a></h3><p>就是上面的模板，然后用线段树维护。</p>
+<p>由于要维护当前覆盖层数 $\geq 1$ 的点的个数，考虑记录区间 $\min$ 值、区间 $\min$ 值出现的线段的长度和区间不为 $0$ 的所有线段的长度。</p>
+<p>这个显然是可以维护的，前两个直接搞。后面的那个如果区间 $\min$ 值为 $0$，答案就是区间总长度 $-$ 区间 $\min$ 值的线段长度。</p>
+<p>如果区间 $\min$ 值不为 $0$，答案就是区间总长度。</p>
+<p>时间复杂度：$O(n\log n)$。</p>
+<h4 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;tuple&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> int long long</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> kMaxN = <span class="number">2e5</span> + <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n, m, k;</span><br><span class="line"><span class="type">int</span> x1[kMaxN], y1[kMaxN], x2[kMaxN], y2[kMaxN], b[kMaxN], lsh[kMaxN];</span><br><span class="line"><span class="type">int</span> sum[kMaxN &lt;&lt; <span class="number">2</span>], mini[kMaxN &lt;&lt; <span class="number">2</span>], cnt[kMaxN &lt;&lt; <span class="number">2</span>], tag[kMaxN &lt;&lt; <span class="number">2</span>];</span><br><span class="line">std::vector&lt;std::tuple&lt;<span class="type">int</span>, <span class="type">int</span>, <span class="type">int</span>&gt;&gt; v[kMaxN];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">discrete</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::<span class="built_in">sort</span>(b + <span class="number">1</span>, b + <span class="number">1</span> + m), std::<span class="built_in">sort</span>(lsh + <span class="number">1</span>, lsh + <span class="number">1</span> + k);</span><br><span class="line">  m = std::<span class="built_in">unique</span>(b + <span class="number">1</span>, b + <span class="number">1</span> + m) - (b + <span class="number">1</span>);</span><br><span class="line">  k = std::<span class="built_in">unique</span>(lsh + <span class="number">1</span>, lsh + <span class="number">1</span> + k) - (lsh + <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    y1[i] = std::<span class="built_in">lower_bound</span>(lsh + <span class="number">1</span>, lsh + <span class="number">1</span> + k, y1[i]) - lsh;</span><br><span class="line">    y2[i] = std::<span class="built_in">lower_bound</span>(lsh + <span class="number">1</span>, lsh + <span class="number">1</span> + k, y2[i]) - lsh;</span><br><span class="line">    v[std::<span class="built_in">lower_bound</span>(b + <span class="number">1</span>, b + <span class="number">1</span> + m, x1[i]) - b].<span class="built_in">emplace_back</span>(y1[i], y2[i], <span class="number">1</span>);</span><br><span class="line">    v[std::<span class="built_in">lower_bound</span>(b + <span class="number">1</span>, b + <span class="number">1</span> + m, x2[i]) - b].<span class="built_in">emplace_back</span>(y1[i], y2[i], <span class="number">-1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pushup</span><span class="params">(<span class="type">int</span> x)</span> </span>&#123;</span><br><span class="line">  sum[x] = sum[x &lt;&lt; <span class="number">1</span>] + sum[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>];</span><br><span class="line">  <span class="keyword">if</span> (mini[x &lt;&lt; <span class="number">1</span>] &lt; mini[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>]) &#123;</span><br><span class="line">    mini[x] = mini[x &lt;&lt; <span class="number">1</span>], cnt[x] = cnt[x &lt;&lt; <span class="number">1</span>];</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (mini[x &lt;&lt; <span class="number">1</span>] &gt; mini[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>]) &#123;</span><br><span class="line">    mini[x] = mini[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>], cnt[x] = cnt[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>];</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    mini[x] = mini[x &lt;&lt; <span class="number">1</span>], cnt[x] = cnt[x &lt;&lt; <span class="number">1</span>] + cnt[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">addtag</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> v)</span> </span>&#123;</span><br><span class="line">  tag[x] += v, mini[x] += v;</span><br><span class="line">  <span class="keyword">if</span> (mini[x]) sum[x] = lsh[r + <span class="number">1</span>] - lsh[l];</span><br><span class="line">  <span class="keyword">else</span> sum[x] = lsh[r + <span class="number">1</span>] - lsh[l] - cnt[x];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pushdown</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> l, <span class="type">int</span> r)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!tag[x]) <span class="keyword">return</span>;</span><br><span class="line">  <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">  <span class="built_in">addtag</span>(x &lt;&lt; <span class="number">1</span>, l, mid, tag[x]), <span class="built_in">addtag</span>(x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r, tag[x]);</span><br><span class="line">  tag[x] = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">build</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> l, <span class="type">int</span> r)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (l == r) &#123;</span><br><span class="line">    cnt[x] = lsh[r + <span class="number">1</span>] - lsh[l];</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">  <span class="built_in">build</span>(x &lt;&lt; <span class="number">1</span>, l, mid), <span class="built_in">build</span>(x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r);</span><br><span class="line">  <span class="built_in">pushup</span>(x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">update</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> ql, <span class="type">int</span> qr, <span class="type">int</span> v)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (l &gt; qr || r &lt; ql) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (l &gt;= ql &amp;&amp; r &lt;= qr) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">addtag</span>(x, l, r, v);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">pushdown</span>(x, l, r);</span><br><span class="line">  <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">  <span class="built_in">update</span>(x &lt;&lt; <span class="number">1</span>, l, mid, ql, qr, v), <span class="built_in">update</span>(x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r, ql, qr, v);</span><br><span class="line">  <span class="built_in">pushup</span>(x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dickdreamer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::cin &gt;&gt; n;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    std::cin &gt;&gt; x1[i] &gt;&gt; y1[i] &gt;&gt; x2[i] &gt;&gt; y2[i];</span><br><span class="line">    b[++m] = x1[i]; b[++m] = x2[i];</span><br><span class="line">    lsh[++k] = y1[i]; lsh[++k] = y2[i];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">discrete</span>();</span><br><span class="line">  <span class="type">long</span> <span class="type">long</span> ans = <span class="number">0</span>;</span><br><span class="line">  <span class="built_in">build</span>(<span class="number">1</span>, <span class="number">1</span>, k - <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; m; ++i) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> p : v[i]) &#123;</span><br><span class="line">      <span class="type">int</span> l = std::<span class="built_in">get</span>&lt;<span class="number">0</span>&gt;(p), r = std::<span class="built_in">get</span>&lt;<span class="number">1</span>&gt;(p), c = std::<span class="built_in">get</span>&lt;<span class="number">2</span>&gt;(p);</span><br><span class="line">      <span class="built_in">update</span>(<span class="number">1</span>, <span class="number">1</span>, k - <span class="number">1</span>, l, r - <span class="number">1</span>, c);</span><br><span class="line">    &#125;</span><br><span class="line">    ans += <span class="number">1ll</span> * (b[i + <span class="number">1</span>] - b[i]) * sum[<span class="number">1</span>];</span><br><span class="line">  &#125;</span><br><span class="line">  std::cout &lt;&lt; ans &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int32_t</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>), std::cin.<span class="built_in">tie</span>(<span class="number">0</span>), std::cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="type">int</span> T = <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// cin &gt;&gt; T;</span></span><br><span class="line">  <span class="keyword">while</span> (T--) <span class="built_in">dickdreamer</span>();</span><br><span class="line">  <span class="comment">// std::cerr &lt;&lt; 1.0 * clock() / CLOCKS_PER_SEC &lt;&lt; &#x27;s&#x27; &lt;&lt; endl;</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>未完待续…….</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/06/27/CF1804D-Accommodation-%E9%A2%98%E8%A7%A3/" rel="prev" title="CF1804D Accommodation 题解">
+                  <i class="fa fa-chevron-left"></i> CF1804D Accommodation 题解
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Scarab</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+<div>
+<span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("6/26/2023 12:08:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"scaradad","repo":"scaradad.github.io","client_id":"7b7f10f5c449865d69cd","client_secret":"8f7b4aea34e67d03d422eccf329443a6268ad58d","admin_user":"scaradad","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"ffdc9b6cfce3e2cddb4bb934f190b38e"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
