@@ -159,6 +159,8 @@
     <content><![CDATA[<h2 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h2><p>给定一个 $n$ 个点 $m$ 条边的有向无环图，每条边长度都是 $1$。</p>
 <p>请找到一个点，使得删掉这个点后剩余的图中的最长路径最短。</p>
 <p>$n\leq 5\times 10^5,m\leq 10^6$。</p>
+<span id="more"></span>
+
 <h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><p>设 $f_i$ 表示以 $i$ 为终点的最长路，$g_i$ 表示以 $i$ 为起点的最长路，$d_i$ 为 $i$ 的拓扑序。</p>
 <p>这两个显然可以通过拓扑排序求出。</p>
 <p>易知原图中的任何一个路径上的点的拓扑序一定是递增的，所以删掉一个点 $u$，剩余的路径只有 $f_i(d_i&lt;d_u),g_i(d_i&gt;d_u),f_i+g_j+1(d_i&lt;d_u&lt;d_j)$ 三种可能。</p>
