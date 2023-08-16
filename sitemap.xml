@@ -187,20 +187,6 @@
   </url>
   
   <url>
-    <loc>http://scaradad.github.io/tags/%E5%9B%BE%E8%AE%BA/</loc>
-    <lastmod>2023-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://scaradad.github.io/tags/%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F/</loc>
-    <lastmod>2023-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>http://scaradad.github.io/tags/APIO/</loc>
     <lastmod>2023-08-16</lastmod>
     <changefreq>weekly</changefreq>
@@ -216,6 +202,20 @@
   
   <url>
     <loc>http://scaradad.github.io/tags/%E7%BA%BF%E6%AE%B5%E6%A0%91/</loc>
+    <lastmod>2023-08-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://scaradad.github.io/tags/%E5%9B%BE%E8%AE%BA/</loc>
+    <lastmod>2023-08-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://scaradad.github.io/tags/%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F/</loc>
     <lastmod>2023-08-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -266,14 +266,14 @@
   </url>
   
   <url>
-    <loc>http://scaradad.github.io/categories/%E9%A2%98%E8%A7%A3/%E5%9B%BE%E8%AE%BA/</loc>
+    <loc>http://scaradad.github.io/categories/%E9%A2%98%E8%A7%A3/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</loc>
     <lastmod>2023-08-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://scaradad.github.io/categories/%E9%A2%98%E8%A7%A3/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</loc>
+    <loc>http://scaradad.github.io/categories/%E9%A2%98%E8%A7%A3/%E5%9B%BE%E8%AE%BA/</loc>
     <lastmod>2023-08-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -308,14 +308,14 @@
   </url>
   
   <url>
-    <loc>http://scaradad.github.io/categories/%E9%A2%98%E8%A7%A3/%E5%9B%BE%E8%AE%BA/%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F/</loc>
+    <loc>http://scaradad.github.io/categories/%E9%A2%98%E8%A7%A3/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E7%BA%BF%E6%AE%B5%E6%A0%91/</loc>
     <lastmod>2023-08-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://scaradad.github.io/categories/%E9%A2%98%E8%A7%A3/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E7%BA%BF%E6%AE%B5%E6%A0%91/</loc>
+    <loc>http://scaradad.github.io/categories/%E9%A2%98%E8%A7%A3/%E5%9B%BE%E8%AE%BA/%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F/</loc>
     <lastmod>2023-08-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
