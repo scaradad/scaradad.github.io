@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>P7987 [USACO21DEC] Paired Up G 题解 - 下蛋爷爷</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Egg_laying_master 的博客"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Egg_laying_master 的博客"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="Description 数轴上总计有 \(N\)（\(1\le N\le 10^5\)）头奶牛。第 \(i\) 头奶牛的位置为 \(x_i\)（\(0 \leq x_i \leq 10^9\)），而第 \(i\) 头奶牛的重量为 \(y_i\)（\(1 \leq y_i \leq 10^4\)）。 根据 Farmer John 的信号，某些奶牛会组成对，使得  每一对包含位置相差不超过"><meta property="og:type" content="blog"><meta property="og:title" content="P7987 [USACO21DEC] Paired Up G 题解"><meta property="og:url" content="http://scaradad.github.io/2023/08/22/P7987-USACO21DEC-Paired-Up-G-%E9%A2%98%E8%A7%A3/"><meta property="og:site_name" content="下蛋爷爷"><meta property="og:description" content="Description 数轴上总计有 \(N\)（\(1\le N\le 10^5\)）头奶牛。第 \(i\) 头奶牛的位置为 \(x_i\)（\(0 \leq x_i \leq 10^9\)），而第 \(i\) 头奶牛的重量为 \(y_i\)（\(1 \leq y_i \leq 10^4\)）。 根据 Farmer John 的信号，某些奶牛会组成对，使得  每一对包含位置相差不超过"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://scaradad.github.io/img/og_image.png"><meta property="article:published_time" content="2023-08-22T12:29:34.000Z"><meta property="article:modified_time" content="2023-08-22T13:06:26.422Z"><meta property="article:author" content="Egg_laying_master"><meta property="article:tag" content="题解"><meta property="article:tag" content="USACO"><meta property="article:tag" content="DP"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="http://scaradad.github.io/img/og_image.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://scaradad.github.io/2023/08/22/P7987-USACO21DEC-Paired-Up-G-%E9%A2%98%E8%A7%A3/"},"headline":"P7987 [USACO21DEC] Paired Up G 题解","image":["http://scaradad.github.io/img/og_image.png"],"datePublished":"2023-08-22T12:29:34.000Z","dateModified":"2023-08-22T13:06:26.422Z","author":{"@type":"Person","name":"Egg_laying_master"},"publisher":{"@type":"Organization","name":"下蛋爷爷","logo":{"@type":"ImageObject","url":"http://scaradad.github.io/img/favicon.svg"}},"description":"Description\r 数轴上总计有 \\(N\\)（\\(1\\le N\\le 10^5\\)）头奶牛。第 \\(i\\) 头奶牛的位置为 \\(x_i\\)（\\(0 \\leq\r x_i \\leq 10^9\\)），而第 \\(i\\)\r 头奶牛的重量为 \\(y_i\\)（\\(1 \\leq y_i \\leq 10^4\\)）。\r 根据 Farmer John 的信号，某些奶牛会组成对，使得\r \r 每一对包含位置相差不超过"}</script><link rel="canonical" href="http://scaradad.github.io/2023/08/22/P7987-USACO21DEC-Paired-Up-G-%E9%A2%98%E8%A7%A3/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/6.0.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.lug.ustc.edu.cn/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/favicon.svg" alt="下蛋爷爷" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">主页</a><a class="navbar-item" href="/about">关于</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/archives">归档</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2023-08-22T12:29:34.000Z" title="2023-08-22T12:29:34.000Z">2023-08-22</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2023-08-22T13:06:26.422Z" title="2023-08-22T13:06:26.422Z">2023-08-22</time></span><span class="level-item"><a class="link-muted" href="/categories/%E9%A2%98%E8%A7%A3/">题解</a><span> / </span><a class="link-muted" href="/categories/%E9%A2%98%E8%A7%A3/DP/">DP</a></span><span class="level-item">7 分钟读完 (大约1008个字)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">P7987 [USACO21DEC] Paired Up G 题解</h1><div class="content"><h2 id="description">Description</h2>
+<p>数轴上总计有 <span class="math inline">\(N\)</span>（<span
+class="math inline">\(1\le N\le 10^5\)</span>）头奶牛。第 <span
+class="math inline">\(i\)</span> 头奶牛的位置为 <span
+class="math inline">\(x_i\)</span>（<span class="math inline">\(0 \leq
+x_i \leq 10^9\)</span>），而第 <span class="math inline">\(i\)</span>
+头奶牛的重量为 <span class="math inline">\(y_i\)</span>（<span
+class="math inline">\(1 \leq y_i \leq 10^4\)</span>）。</p>
+<p>根据 Farmer John 的信号，某些奶牛会组成对，使得</p>
+<ul>
+<li><p>每一对包含位置相差不超过 <span class="math inline">\(K\)</span>
+的两头不同的奶牛 <span class="math inline">\(a\)</span> 和 <span
+class="math inline">\(b\)</span>（<span class="math inline">\(1\le K\le
+10^9\)</span>）；也就是说，<span class="math inline">\(|x_a-x_b|\le
+K\)</span>。</p></li>
+<li><p>每一头奶牛要么包含在恰好一对中，要么不属于任何一对。</p></li>
+<li><p><strong>配对是极大的</strong>；也就是说，没有两头未配对的奶牛可以组成对。</p></li>
+</ul>
+<p>你需要求出未配对的奶牛的重量之和的可能的范围。具体地说，</p>
+<ul>
+<li>如果 <span
+class="math inline">\(T=1\)</span>，计算未配对的奶牛的最小重量和。</li>
+<li>如果 <span
+class="math inline">\(T=2\)</span>，计算未配对的奶牛的最大重量和。</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P7987">link</a></p>
+<span id="more"></span>
+<h2 id="solution">Solution</h2>
+<p>先把位置排个序，如果是问最大值那么就每个数乘 <span
+class="math inline">\(-1\)</span>，最后取反即可。</p>
+<p>注意到如果把所有没有配对的奶牛删掉，剩下的奶牛一定满足相邻的位置差
+<span class="math inline">\(\leq k\)</span>。</p>
+<p>考虑 DP。</p>
+<p>设 <span class="math inline">\(f_{i,0/1}\)</span> 表示已经处理了
+<span class="math inline">\(1\sim i\)</span> 这些奶牛，删掉了 偶数/奇数
+头奶牛，删掉的奶牛的总和最小值，<span class="math inline">\(l\)</span>
+表示位置 <span class="math inline">\(&lt; x_i-k\)</span>
+的位置最大的奶牛，<span class="math inline">\(j=i\bmod 2\)</span>。</p>
+<p>然后就是分类讨论：</p>
+<ol type="1">
+<li><p><span class="math inline">\(1\sim i-1\)</span>
+<strong>剩下</strong>偶数个</p>
+<ul>
+<li><p><span class="math inline">\(i\)</span> 删掉</p>
+<p>那么 <span class="math inline">\(1\sim i\)</span>
+仍然剩下偶数个，并且上一个删掉的一定在 <span
+class="math inline">\(l\)</span> 之前，所以 <span
+class="math inline">\(f_{i,j}\leftarrow
+f_{l,1-j}+y_i\)</span>。</p></li>
+<li><p><span class="math inline">\(i\)</span> 不删</p>
+<p>那么 <span class="math inline">\(1\sim i\)</span>
+剩下奇数个，并且要满足 <span class="math inline">\(x_{i+1}-x_{i}\leq
+k\)</span>，因为这时候 <span class="math inline">\(i\)</span>
+是剩下的编号为奇数的奶牛，要和 <span class="math inline">\(i+1\)</span>
+之后的奶牛进行配对，一定要满足这个条件。所以 <span
+class="math inline">\(f_{i,1-j}\leftarrow
+f_{i-1,1-j}\)</span>。</p></li>
+</ul></li>
+<li><p><span class="math inline">\(1\sim i-1\)</span>
+<strong>剩下</strong>奇数个</p>
+<ul>
+<li><p><span class="math inline">\(i\)</span> 删掉</p>
+<p>上一个删掉的一定在 <span class="math inline">\(l\)</span>
+之前，并且这时 <span class="math inline">\(i-1\)</span> 要和 <span
+class="math inline">\(i+1\)</span> 之后的奶牛进行配对，所以要满足 <span
+class="math inline">\(x_{i+1}-x_{i-1}\leq k\)</span>。那么 <span
+class="math inline">\(f_{i,1-j}\leftarrow
+f_{l,j}+y_i\)</span>。</p></li>
+<li><p><span class="math inline">\(i\)</span> 不删</p>
+<p>那么 <span class="math inline">\(1\sim i\)</span> 剩下偶数个，并且
+<span class="math inline">\(i\)</span> 和 <span
+class="math inline">\(i-1\)</span> 及之前的要配对，所以满足 <span
+class="math inline">\(x_{i}-x_{i-1}\leq k\)</span> 才可以转移，则 <span
+class="math inline">\(f_{i,j}\leftarrow f_{i-1,j}\)</span>。</p></li>
+</ul></li>
+</ol>
+<p>时间复杂度：<span class="math inline">\(O(n)\)</span>。</p>
+<hr />
+<p>其实仔细思考会发现上面状态转移的条件只是<strong>必要</strong>的，不够<strong>充分</strong>，下面证明下各个转移的条件放到一起为啥就对了。</p>
+<p>先假设 <span class="math inline">\(1\sim i-1\)</span>
+的条件都是正确的，那么 2,2 里面如果不满足 <span
+class="math inline">\(x_i-x_{i-1}\leq k\)</span>，显然 <span
+class="math inline">\(i\)</span>
+前面那个没被删的就找不到和他配对的了。满足了 <span
+class="math inline">\(x_{i}-x_{i-1}\leq
+k\)</span>，状态就相当于转化为“<span class="math inline">\(1\sim
+i-1\)</span>，<strong>剩下</strong>了奇数个奶牛”，也就是状态 1.2 和
+2.1，1.2 的条件满足了 <span class="math inline">\(i-1\)</span>
+不删的情况。2.1 由于 <span
+class="math inline">\(x_l&lt;x_{i-1}-k\)</span>，所以 <span
+class="math inline">\(l+1\sim i-2\)</span> 都没删，所以 <span
+class="math inline">\(1\sim i-1\)</span> 那个编号最大的没删的一定是
+<span class="math inline">\(i-2\)</span>，所以 <span
+class="math inline">\(i-2\)</span> 要与 <span
+class="math inline">\(i\)</span> 配对，条件就派上了用场。</p>
+<p>然后是 1.2，如果不满足 <span class="math inline">\(x_{i+1}-x_i\leq
+k\)</span>，<span class="math inline">\(i\)</span>
+就找不到他后面的奶牛了，显然不行。满足了 <span
+class="math inline">\(x_{i+1}-x_i\leq k\)</span>，相当于钦定 <span
+class="math inline">\(i\)</span> 能找到后面的，那么 <span
+class="math inline">\(f_{i-1,1-j}\)</span> 就可以直接转移了。</p>
+<p>最后是 2.1，由 2.2 的分析可知 <span class="math inline">\(1\sim
+i\)</span> 里面最后的一个没删的奶牛一定是 <span
+class="math inline">\(i-1\)</span>，钦定他能找到后面的，就可以直接转移。</p>
+<p>综上所述，1.2 和 2.1 相当于钦定后面满足的条件，然后 2.2
+的条件刚好符合 1.2 和 2.1 所钦定的条件，即可转移得万无一失。</p>
+<h2 id="code">Code</h2>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> int int64_t</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> kMaxN = <span class="number">1e5</span> + <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> t, n, k, op = <span class="number">1</span>;</span><br><span class="line"><span class="type">int</span> f[kMaxN][<span class="number">2</span>];</span><br><span class="line">std::pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt; a[kMaxN];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dickdreamer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::cin &gt;&gt; t &gt;&gt; n &gt;&gt; k;</span><br><span class="line">  <span class="keyword">if</span> (t == <span class="number">2</span>) op = <span class="number">-1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    std::cin &gt;&gt; a[i].first &gt;&gt; a[i].second;</span><br><span class="line">    a[i].second *= op;</span><br><span class="line">  &#125;</span><br><span class="line">  std::<span class="built_in">sort</span>(a + <span class="number">1</span>, a + <span class="number">1</span> + n);</span><br><span class="line">  <span class="built_in">memset</span>(f, <span class="number">0x3f</span>, <span class="built_in">sizeof</span>(f));</span><br><span class="line">  f[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">  a[<span class="number">0</span>].first = <span class="number">-1e12</span>, a[n + <span class="number">1</span>].first = <span class="number">1e12</span>;</span><br><span class="line">  <span class="type">int</span> lst = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    <span class="keyword">for</span> (; a[lst + <span class="number">1</span>].first &lt; a[i].first - k; ++lst) &#123;&#125;</span><br><span class="line">    <span class="type">int</span> j = (i &amp; <span class="number">1</span>);</span><br><span class="line">    f[i][j] = std::<span class="built_in">min</span>(f[i][j], f[lst][j ^ <span class="number">1</span>] + a[i].second);</span><br><span class="line">    <span class="keyword">if</span> (a[i + <span class="number">1</span>].first - a[i].first &lt;= k) f[i][j ^ <span class="number">1</span>] = std::<span class="built_in">min</span>(f[i][j ^ <span class="number">1</span>], f[i - <span class="number">1</span>][j ^ <span class="number">1</span>]);</span><br><span class="line">    <span class="keyword">if</span> (a[i + <span class="number">1</span>].first - a[i - <span class="number">1</span>].first &lt;= k) f[i][j ^ <span class="number">1</span>] = std::<span class="built_in">min</span>(f[i][j ^ <span class="number">1</span>], f[lst][j] + a[i].second);</span><br><span class="line">    <span class="keyword">if</span> (a[i].first - a[i - <span class="number">1</span>].first &lt;= k) f[i][j] = std::<span class="built_in">min</span>(f[i][j], f[i - <span class="number">1</span>][j]);</span><br><span class="line">  &#125;</span><br><span class="line">  std::cout &lt;&lt; f[n][n &amp; <span class="number">1</span>] * op &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int32_t</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> ORZXKR</span></span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;in.txt&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;out.txt&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">  std::ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>), std::cin.<span class="built_in">tie</span>(<span class="number">0</span>), std::cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="type">int</span> T = <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// std::cin &gt;&gt; T;</span></span><br><span class="line">  <span class="keyword">while</span> (T--) <span class="built_in">dickdreamer</span>();</span><br><span class="line">  <span class="comment">// std::cerr &lt;&lt; 1.0 * clock() / CLOCKS_PER_SEC &lt;&lt; &quot;s\n&quot;;</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</div><div class="article-licensing box"><div class="licensing-title"><p>P7987 [USACO21DEC] Paired Up G 题解</p><p><a href="http://scaradad.github.io/2023/08/22/P7987-USACO21DEC-Paired-Up-G-题解/">http://scaradad.github.io/2023/08/22/P7987-USACO21DEC-Paired-Up-G-题解/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>Egg_laying_master</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2023-08-22</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2023-08-22</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/%E9%A2%98%E8%A7%A3/">题解</a><a class="link-muted mr-2" rel="tag" href="/tags/USACO/">USACO</a><a class="link-muted mr-2" rel="tag" href="/tags/DP/">DP</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2023/08/21/P7986-USACO21DEC-HILO-P-%E9%A2%98%E8%A7%A3/"><span class="level-item">P7986 [USACO21DEC] HILO P 题解</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "27e73112eb11e108310a05c13bef237b",
+            repo: "scaradad.github.io",
+            owner: "scaradad",
+            clientID: "7b7f10f5c449865d69cd",
+            clientSecret: "8f7b4aea34e67d03d422eccf329443a6268ad58d",
+            admin: ["scaradad"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 10,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar is-rounded" src="/img/avatar.png" alt="Egg_laying_master"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">Egg_laying_master</p><p class="is-size-6 is-block">下蛋爷爷</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>中国</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">9</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">16</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">22</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/scaradad" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/scaradad"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com/scaradad"><i class="fab fa-twitter"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#description"><span class="level-left"><span class="level-item">1</span><span class="level-item">Description</span></span></a></li><li><a class="level is-mobile" href="#solution"><span class="level-left"><span class="level-item">2</span><span class="level-item">Solution</span></span></a></li><li><a class="level is-mobile" href="#code"><span class="level-left"><span class="level-item">3</span><span class="level-item">Code</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/favicon.svg" alt="下蛋爷爷" height="28"></a><p class="is-size-7"><span>&copy; 2023 Egg_laying_master</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">共<span id="busuanzi_value_site_uv">0</span>个访客</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/auto-render.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/mhchem.min.js" defer></script><script>window.addEventListener("load", function() {
+            document.querySelectorAll('[role="article"] > .content').forEach(function(element) {
+                renderMathInElement(element);
+            });
+        });</script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
