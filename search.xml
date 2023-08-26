@@ -1,6 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>AGC060C Large Heap 题解</title>
+    <url>/2023/08/25/AGC060C-Large-Heap-%E9%A2%98%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="description">Description</h2>
+<p>考虑 <span class="math inline">\((1,2,...,2^N-1)\)</span> 的一个排列
+<span class="math inline">\(P=(P_1,P_2,...,P_{2^N-1})\)</span>。称 <span
+class="math inline">\(P\)</span> <strong>像堆</strong>当且仅当 <span
+class="math inline">\(P_i \lt P_{2i}\)</span> 和 <span
+class="math inline">\(P_i \lt P_{2i+1}\)</span> 对 <span
+class="math inline">\(1 \le i \le 2^{N-1}-1\)</span> 成立。</p>
+<p>给定正整数 <span class="math inline">\(A\)</span> 和 <span
+class="math inline">\(B\)</span>。令 <span
+class="math inline">\(U=2^A\)</span>，<span
+class="math inline">\(V=2^{B+1}-1\)</span>。在所有<strong>像堆</strong>的排列中任取一个，求
+<span class="math inline">\(P_U \lt P_V\)</span> 的概率。模 <span
+class="math inline">\(998244353\)</span>。</p>
+<h2 id="solution">Solution</h2>
+<p>容易发现 <span class="math inline">\(U\)</span> 和 <span
+class="math inline">\(V\)</span> 分别是小根堆里面第 <span
+class="math inline">\(A\)</span> 行最左边的一个和第 <span
+class="math inline">\(B\)</span> 行最右边的一个，因此 <span
+class="math inline">\(U\)</span> 相当于从根一直往左跳的结果，<span
+class="math inline">\(V\)</span> 相当于从根一直往右跳的结果。</p>
+<p>又因为求的是概率，所以我们就只需要关心从根往左和往右跳的路径上的数的大小关系。</p>
+<p>考虑从小到大往两条路径上加数，然后 dp。</p>
+<p>设 <span class="math inline">\(f_{i,j,0/1}\)</span>
+表示当前左边加到了第 <span class="math inline">\(i\)</span>
+行，右边加到了第 <span class="math inline">\(j\)</span>
+行，且最后一次是加到了左边/右边的概率，初始值是 <span
+class="math inline">\(f_{0,0,0}=1\)</span>。</p>
+<p>由于左右边的概率不定，所以要求出往左边加和往右边的概率。</p>
+<p>设 <span class="math inline">\(i+1\)</span> 为根的子树大小为 <span
+class="math inline">\(x\)</span>，<span
+class="math inline">\(j+1\)</span> 为根的子树大小为 <span
+class="math inline">\(y\)</span>。那么这 <span
+class="math inline">\(x+y\)</span> 个数的最小值是 <span
+class="math inline">\(i+1\)</span> 的概率就是 <span
+class="math inline">\(\displaystyle\frac{\binom{x+y-1}{x-1}}{\binom{x+y}{x}}=\frac{x}{x+y}\)</span>，所以下一步加到左边的概率就是
+<span
+class="math inline">\(\displaystyle\frac{x}{x+y}\)</span>，加到右边的概率就是
+<span class="math inline">\(\displaystyle\frac{y}{x+y}\)</span>。</p>
+<p>所以：</p>
+<p><span
+class="math display">\[f_{i+1,j,0}\leftarrow\left(f_{i,j,0}+f_{i,j,1}\right)\cdot
+\frac{x}{x+y}\\
+f_{i,j+1,1}\leftarrow\left(f_{i,j,0}+f_{i,j,1}\right)\cdot
+\frac{y}{x+y}\]</span></p>
+<p>第 <span class="math inline">\(i\)</span>
+行对应点的子树大小很好求，就是 <span
+class="math inline">\(2^{n-i}-1\)</span>。</p>
+<hr />
+<p>最后就是最终答案。</p>
+<p>考虑枚举左边<strong>第一次</strong>到达 <span
+class="math inline">\(A\)</span> 时右边的位置，假设为 <span
+class="math inline">\(k\)</span>，那么到达这个状态后，之后怎么加都会满足
+<span class="math inline">\(P_U&lt;P_V\)</span>，所以贡献就是 <span
+class="math inline">\(f_{A,i,0}\)</span>。</p>
+<p>所以结果为：<span
+class="math inline">\(\displaystyle\sum_{i=1}^{B-1}{f_{A,i,0}}\)</span>。</p>
+<p>时间复杂度：<span class="math inline">\(O(n^2\log
+\text{MOD})\)</span>。</p>
+<p>（那个 <span class="math inline">\(\log\text{MOD}\)</span>
+是在转移过程中求逆元的 <span class="math inline">\(\log\)</span>）</p>
+<h2 id="code">Code</h2>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// #define int int64_t</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> i64 = <span class="type">int64_t</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> kMaxN = <span class="number">5005</span>, kMod = <span class="number">998244353</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n, A, B;</span><br><span class="line"><span class="type">int</span> f[kMaxN][kMaxN][<span class="number">2</span>], s[kMaxN];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">qpow</span><span class="params">(<span class="type">int</span> bs, <span class="type">int</span> idx = kMod - <span class="number">2</span>)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> ret = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (; idx; idx &gt;&gt;= <span class="number">1</span>, bs = (i64)bs * bs % kMod)</span><br><span class="line">    <span class="keyword">if</span> (idx &amp; <span class="number">1</span>)</span><br><span class="line">      ret = (i64)ret * bs % kMod;</span><br><span class="line">  <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dickdreamer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::cin &gt;&gt; n &gt;&gt; A &gt;&gt; B;</span><br><span class="line">  s[n - <span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = n - <span class="number">2</span>; ~i; --i)</span><br><span class="line">    s[i] = (<span class="number">2ll</span> * s[i + <span class="number">1</span>] + <span class="number">1</span>) % kMod;</span><br><span class="line">  f[<span class="number">0</span>][<span class="number">0</span>][<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt;= A; ++i) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt;= B; ++j) &#123;</span><br><span class="line">      <span class="type">int</span> p = (i64)s[i + <span class="number">1</span>] * <span class="built_in">qpow</span>((s[i + <span class="number">1</span>] + s[j + <span class="number">1</span>]) % kMod) % kMod;</span><br><span class="line">      f[i + <span class="number">1</span>][j][<span class="number">0</span>] = (f[i + <span class="number">1</span>][j][<span class="number">0</span>] + (i64)p * (f[i][j][<span class="number">0</span>] + f[i][j][<span class="number">1</span>]) % kMod) % kMod;</span><br><span class="line">      f[i][j + <span class="number">1</span>][<span class="number">1</span>] = (f[i][j + <span class="number">1</span>][<span class="number">1</span>] + (i64)(kMod + <span class="number">1</span> - p) % kMod * (f[i][j][<span class="number">0</span>] + f[i][j][<span class="number">1</span>]) % kMod) % kMod;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; B; ++i)</span><br><span class="line">    ans = (ans + f[A][i][<span class="number">0</span>]) % kMod;</span><br><span class="line">  std::cout &lt;&lt; ans &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int32_t</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> ORZXKR</span></span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;in.txt&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;out.txt&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">  std::ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>), std::cin.<span class="built_in">tie</span>(<span class="number">0</span>), std::cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="type">int</span> T = <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// std::cin &gt;&gt; T;</span></span><br><span class="line">  <span class="keyword">while</span> (T--) <span class="built_in">dickdreamer</span>();</span><br><span class="line">  <span class="comment">// std::cerr &lt;&lt; 1.0 * clock() / CLOCKS_PER_SEC &lt;&lt; &quot;s\n&quot;;</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>题解</category>
+        <category>数学</category>
+        <category>概率论</category>
+      </categories>
+      <tags>
+        <tag>题解</tag>
+        <tag>AtCoder</tag>
+        <tag>数学</tag>
+        <tag>概率论</tag>
+        <tag>DP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CF1804D Accommodation 题解</title>
     <url>/2023/06/27/CF1804D-Accommodation-%E9%A2%98%E8%A7%A3/</url>
     <content><![CDATA[<h2 id="description">Description</h2>
@@ -49,163 +128,6 @@ class="math inline">\(\dfrac{m}{4}\)</span>。</p>
         <tag>题解</tag>
         <tag>Codeforces</tag>
         <tag>贪心</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CF932E Team Work 题解</title>
-    <url>/2023/08/16/CF932E-Team-Work-%E9%A2%98%E8%A7%A3/</url>
-    <content><![CDATA[<h2 id="description">Description</h2>
-<p>给定 <span class="math inline">\(n,k\)</span>，求：</p>
-<p><span
-class="math display">\[\displaystyle\sum_{i=1}^{n}{\binom{n}{i}\times
-i^k}\]</span></p>
-<p><span class="math inline">\(1\leq k\leq 5000,1\leq n\leq
-10^9\)</span>。</p>
-<span id="more"></span>
-<h2 id="solution">Solution</h2>
-<p>看到那个 <span class="math inline">\(i^k\)</span> 很不爽，但是 <span
-class="math inline">\(k\)</span> 很小，考虑用斯特林数改写一下：</p>
-<p><span class="math display">\[i^k=\sum_{j=0}^{k}{\binom{i}{j}\left \{
-\begin{matrix} k\\ j \end{matrix} \right \}\cdot j!}\]</span></p>
-<p>代回原式得：</p>
-<p><span class="math display">\[\displaystyle
-\begin{aligned}
-&amp;\sum_{i=0}^{n}{\binom{n}{i}\cdot\sum_{j=0}^{k}{\binom{i}{j}\left \{
-{\begin{matrix} k\\ j \end{matrix}} \right \} j!} }\\
-=&amp;\sum_{j=0}^{k}{j!\left\{\begin{matrix}k\\j\end{matrix}\right\}\cdot\sum_{i=0}^{n}{\binom{n}{i}\binom{i}{j}}}\\
-=&amp;\sum_{j=0}^{k}{j!\left\{\begin{matrix}k\\j\end{matrix}\right\}\cdot\sum_{i=j}^{n}{\frac{n!}{i!(n-i)!}\cdot
-\frac{i!}{j!(i-j)!}}}\\
-=&amp;n!\sum_{j=0}^{k}{\left\{\begin{matrix}k\\j\end{matrix}\right\}\cdot\sum_{i=j}^{n}{\frac{\binom{n-j}{i-j}}{(n-j)!}}}\\
-=&amp;n!\sum_{j=0}^{k}{\frac{1}{(n-j)!}\left\{\begin{matrix}k\\j\end{matrix}\right\}\sum_{i=0}^{n-j}{\binom{n-j}{i}}}\\
-=&amp;n!\sum_{j=0}^{k}{\frac{2^{n-j}}{(n-j)!}\cdot
-\left\{\begin{matrix}k\\j\end{matrix}\right\}}\\
-\end{aligned}\]</span></p>
-<p>于是直接预处理出斯特林数即可做到 <span
-class="math inline">\(O(k^2+k\log
-n)\)</span>，如果用卷积预处理的话就可以做到 <span
-class="math inline">\(O(k\log k+k\log n)\)</span>。</p>
-<h2 id="code">Code</h2>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// #define int int64_t</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> i64 = <span class="type">int64_t</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> kMod = <span class="number">1e9</span> + <span class="number">7</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> s[<span class="number">5005</span>][<span class="number">5005</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">qpow</span><span class="params">(<span class="type">int</span> bs, <span class="type">int</span> idx = kMod - <span class="number">2</span>)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> ret = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (; idx; idx &gt;&gt;= <span class="number">1</span>, bs = (i64)bs * bs % kMod)</span><br><span class="line">    <span class="keyword">if</span> (idx &amp; <span class="number">1</span>)</span><br><span class="line">      ret = (i64)ret * bs % kMod;</span><br><span class="line">  <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dickdreamer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> n, k, ans = <span class="number">0</span>;</span><br><span class="line">  std::cin &gt;&gt; n &gt;&gt; k;</span><br><span class="line">  s[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= k; ++i) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt;= i; ++j) &#123;</span><br><span class="line">      s[i][j] = (s[i - <span class="number">1</span>][j - <span class="number">1</span>] + (i64)j * s[i - <span class="number">1</span>][j] % kMod) % kMod;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>, c = <span class="number">1</span>; i &lt;= std::<span class="built_in">min</span>(n, k); ++i) &#123;</span><br><span class="line">    ans = (ans + (i64)s[k][i] * c % kMod * <span class="built_in">qpow</span>(<span class="number">2</span>, n - i) % kMod) % kMod;</span><br><span class="line">    c = (i64)c * (n - i) % kMod;</span><br><span class="line">  &#125;</span><br><span class="line">  std::cout &lt;&lt; ans &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int32_t</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> ORZXKR</span></span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;in.txt&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;out.txt&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">  std::ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>), std::cin.<span class="built_in">tie</span>(<span class="number">0</span>), std::cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="type">int</span> T = <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// std::cin &gt;&gt; T;</span></span><br><span class="line">  <span class="keyword">while</span> (T--) <span class="built_in">dickdreamer</span>();</span><br><span class="line">  <span class="comment">// std::cerr &lt;&lt; 1.0 * clock() / CLOCKS_PER_SEC &lt;&lt; &quot;s\n&quot;;</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>题解</category>
-        <category>数学</category>
-        <category>斯特林数</category>
-      </categories>
-      <tags>
-        <tag>题解</tag>
-        <tag>Codeforces</tag>
-        <tag>数学</tag>
-        <tag>斯特林数</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>P3573 [POI2014] RAJ-Rally 题解</title>
-    <url>/2023/07/07/P3573-POI2014-RAJ-Rally-%E9%A2%98%E8%A7%A3/</url>
-    <content><![CDATA[<h2 id="description">Description</h2>
-<p>给定一个 <span class="math inline">\(n\)</span> 个点 <span
-class="math inline">\(m\)</span> 条边的有向无环图，每条边长度都是 <span
-class="math inline">\(1\)</span>。</p>
-<p>请找到一个点，使得删掉这个点后剩余的图中的最长路径最短。</p>
-<p><span class="math inline">\(n\leq 5\times 10^5,m\leq
-10^6\)</span>。</p>
-<span id="more"></span>
-<h2 id="solution">Solution</h2>
-<p>设 <span class="math inline">\(f_i\)</span> 表示以 <span
-class="math inline">\(i\)</span> 为终点的最长路，<span
-class="math inline">\(g_i\)</span> 表示以 <span
-class="math inline">\(i\)</span> 为起点的最长路，<span
-class="math inline">\(d_i\)</span> 为 <span
-class="math inline">\(i\)</span> 的拓扑序。</p>
-<p>这两个显然可以通过拓扑排序求出。</p>
-<p>易知原图中的任何一个路径上的点的拓扑序一定是递增的，所以删掉一个点
-<span class="math inline">\(u\)</span>，剩余的路径只有 <span
-class="math inline">\(f_i(d_i&lt;d_u),g_i(d_i&gt;d_u),f_i+g_j+1(d_i&lt;d_u&lt;d_j)\)</span>
-三种可能。</p>
-<p>那么就可以维护三个 multiset，分别维护 <span
-class="math inline">\(f_i(d_i&lt;d_u),g_i(d_i&gt;d_u),f_i+g_j+1(d_i&lt;d_u&lt;d_j)\)</span>。</p>
-<p>前两个直接在从小到大枚举 <span class="math inline">\(d_u\)</span>
-的时候增删，第三个可以每次先加入 <span
-class="math inline">\(d_i=d_u-1\)</span> 的所有边，然后删去 <span
-class="math inline">\(d_j=d_u\)</span> 的所有边，这样可以保证 <span
-class="math inline">\(d_i&lt;d_u\)</span> 且 <span
-class="math inline">\(d_j&gt;d_u\)</span>。</p>
-<p>时间复杂度：<span class="math inline">\(O((n+m)\log
-(n+m))\)</span>。</p>
-<h2 id="code">Code</h2>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cassert&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;set&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// #define int int64_t</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> kMaxN = <span class="number">5e5</span> + <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n, m, cnt;</span><br><span class="line"><span class="type">int</span> id[kMaxN], deg[kMaxN], f[kMaxN], g[kMaxN];</span><br><span class="line">std::vector&lt;<span class="type">int</span>&gt; G[kMaxN], rG[kMaxN];</span><br><span class="line">std::multiset&lt;<span class="type">int</span>&gt; s1, s2, s3;</span><br><span class="line"></span><br><span class="line"><span class="comment">// s1 : f[u]</span></span><br><span class="line"><span class="comment">// s2 : g[u]</span></span><br><span class="line"><span class="comment">// s3 : f[u] + g[v] + 1(u &lt; i &lt; v)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">topo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::queue&lt;<span class="type">int</span>&gt; q;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!deg[i]) &#123;</span><br><span class="line">      q.<span class="built_in">emplace</span>(i), f[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">while</span> (!q.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">    <span class="type">int</span> u = q.<span class="built_in">front</span>();</span><br><span class="line">    q.<span class="built_in">pop</span>();</span><br><span class="line">    id[++cnt] = u;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> v : G[u]) &#123;</span><br><span class="line">      f[v] = std::<span class="built_in">max</span>(f[v], f[u] + <span class="number">1</span>);</span><br><span class="line">      <span class="keyword">if</span> (!--deg[v])</span><br><span class="line">        q.<span class="built_in">emplace</span>(v);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dickdreamer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::cin &gt;&gt; n &gt;&gt; m;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; ++i) &#123;</span><br><span class="line">    <span class="type">int</span> u, v;</span><br><span class="line">    std::cin &gt;&gt; u &gt;&gt; v;</span><br><span class="line">    G[u].<span class="built_in">emplace_back</span>(v), rG[v].<span class="built_in">emplace_back</span>(u);</span><br><span class="line">    ++deg[v];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">topo</span>();</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = n; i; --i) &#123;</span><br><span class="line">    <span class="type">int</span> u = id[i];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> v : G[u])</span><br><span class="line">      g[u] = std::<span class="built_in">max</span>(g[u], g[v] + <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i)</span><br><span class="line">    s2.<span class="built_in">emplace</span>(-g[i]);</span><br><span class="line">  <span class="type">int</span> ans = <span class="number">1e9</span>, idx = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    <span class="type">int</span> u = id[i];</span><br><span class="line">    <span class="keyword">if</span> (i) &#123;</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">auto</span> v : G[id[i - <span class="number">1</span>]])</span><br><span class="line">        s3.<span class="built_in">emplace</span>(-(f[id[i - <span class="number">1</span>]] + g[v] + <span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> v : rG[u]) &#123;</span><br><span class="line">      s3.<span class="built_in">erase</span>(s3.<span class="built_in">lower_bound</span>(-(f[v] + g[u] + <span class="number">1</span>)));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (i) s1.<span class="built_in">emplace</span>(-f[id[i - <span class="number">1</span>]]);</span><br><span class="line">    s2.<span class="built_in">erase</span>(s2.<span class="built_in">lower_bound</span>(-g[u]));</span><br><span class="line">    <span class="type">int</span> mx = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!s1.<span class="built_in">empty</span>()) mx = std::<span class="built_in">max</span>(mx, -*s1.<span class="built_in">begin</span>());</span><br><span class="line">    <span class="keyword">if</span> (!s2.<span class="built_in">empty</span>()) mx = std::<span class="built_in">max</span>(mx, -*s2.<span class="built_in">begin</span>());</span><br><span class="line">    <span class="keyword">if</span> (!s3.<span class="built_in">empty</span>()) mx = std::<span class="built_in">max</span>(mx, -*s3.<span class="built_in">begin</span>());</span><br><span class="line">    <span class="keyword">if</span> (mx &lt; ans) &#123;</span><br><span class="line">      ans = mx, idx = u;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  std::cout &lt;&lt; idx &lt;&lt; <span class="string">&#x27; &#x27;</span> &lt;&lt; ans &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int32_t</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> ORZXKR</span></span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;in.txt&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;out.txt&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">  std::ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>), std::cin.<span class="built_in">tie</span>(<span class="number">0</span>), std::cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="type">int</span> T = <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// std::cin &gt;&gt; T;</span></span><br><span class="line">  <span class="keyword">while</span> (T--) <span class="built_in">dickdreamer</span>();</span><br><span class="line">  <span class="comment">// std::cerr &lt;&lt; 1.0 * clock() / CLOCKS_PER_SEC &lt;&lt; &quot;s\n&quot;;</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>题解</category>
-        <category>图论</category>
-        <category>拓扑排序</category>
-      </categories>
-      <tags>
-        <tag>题解</tag>
-        <tag>洛谷</tag>
-        <tag>图论</tag>
-        <tag>拓扑排序</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>P4248 [AHOI2013] 差异 题解</title>
-    <url>/2023/07/22/P4248-AHOI2013-%E5%B7%AE%E5%BC%82-%E9%A2%98%E8%A7%A3/</url>
-    <content><![CDATA[<h2 id="description">Description</h2>
-<p>给定一个长度为 <span class="math inline">\(n\)</span> 的字符串 <span
-class="math inline">\(S\)</span>，令 <span
-class="math inline">\(T_i\)</span> 表示它从第 <span
-class="math inline">\(i\)</span> 个字符开始的后缀。求 <span
-class="math inline">\(\displaystyle \sum_{1\leq ij\leq
-n}\text{len}(T_i)+\text{len}(T_j)-2\times\text{lcp}(T_i,T_j)\)</span>。</p>
-<p>其中，<span class="math inline">\(\text{len}(a)\)</span> 表示字符串
-<span class="math inline">\(a\)</span> 的长度，<span
-class="math inline">\(\text{lcp}(a,b)\)</span> 表示字符串 <span
-class="math inline">\(a\)</span> 和字符串 <span
-class="math inline">\(b\)</span> 的最长公共前缀。</p>
-<p><a href="https://www.luogu.com.cn/problem/P4248">link</a></p>
-<span id="more"></span>
-<h2 id="solution">Solution</h2>
-<p>考虑把 <span class="math inline">\(S\)</span> 的反串的 parent
-树建出来。</p>
-<p>设 <span class="math inline">\(T_i\)</span> 的 endpos 等价类是 <span
-class="math inline">\(x\)</span>，<span
-class="math inline">\(T_j\)</span> 的 endpos 等价类是 <span
-class="math inline">\(y\)</span>。</p>
-<p>由于 parent 树上任意一个点的父亲一定是这个点的后缀，所以 <span
-class="math inline">\(T_i\)</span> 和 <span
-class="math inline">\(T_j\)</span> 的公共前缀一定就在反串 parent 树上
-<span class="math inline">\(x\)</span> 和 <span
-class="math inline">\(y\)</span>
-某个公共祖先所表示的等价类里，而最长的一定就在 <span
-class="math inline">\(x\)</span> 和 <span
-class="math inline">\(y\)</span> 的 LCA 上。</p>
-<p>由于 <span class="math inline">\(T_i,T_j\)</span> 和 <span
-class="math inline">\(\text{lcp}(T_i,T_j)\)</span>
-一定都是反串的前缀，所以他们的长度一定都是所在等价类最大的，那么 <span
-class="math inline">\(\text{len}(T_i)+\text{len}(T_j)-2\times\text{lcp}(T_i,T_j)\)</span>
-就等于 <span class="math inline">\(\text{len}_x+\text{len}_y-2\times
-\text{len}_\text{lca}\)</span>，如果把 parent 树的边权看作相邻两点 <span
-class="math inline">\(\text{len}\)</span> 的差值，那么原式就是 <span
-class="math inline">\(x,y\)</span> 的树上最短路径的长度。</p>
-<p>然后对于每条边算贡献即可，即设 <span
-class="math inline">\(\text{size}_x\)</span> 表示 <span
-class="math inline">\(x\)</span>
-的子树里反串前缀所在的等价类的个数，答案就是 <span
-class="math inline">\(\displaystyle\sum\left(\text{size}_x\times(n-\text{size}_x)\times(\text{len}_x-\text{len}_\text{fa})\right)\)</span>。</p>
-<p>时间复杂度：<span class="math inline">\(O(n)\)</span>。</p>
-<h2 id="code">Code</h2>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// #define int int64_t</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> kMaxN = <span class="number">1e6</span> + <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> i64 = <span class="type">int64_t</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n, tot = <span class="number">1</span>, lst = <span class="number">1</span>, nxt[kMaxN][<span class="number">26</span>], len[kMaxN], fa[kMaxN], sz[kMaxN];</span><br><span class="line">i64 ans;</span><br><span class="line">std::vector&lt;<span class="type">int</span>&gt; G[kMaxN];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">ins</span><span class="params">(<span class="type">int</span> c)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> cur = ++tot, p = lst;</span><br><span class="line">  lst = cur;</span><br><span class="line">  len[cur] = len[p] + <span class="number">1</span>, sz[cur] = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (; p &amp;&amp; !nxt[p][c]; p = fa[p]) nxt[p][c] = cur;</span><br><span class="line">  <span class="keyword">if</span> (!p) &#123;</span><br><span class="line">    fa[cur] = <span class="number">1</span>;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="type">int</span> q = nxt[p][c];</span><br><span class="line">    <span class="keyword">if</span> (len[q] == len[p] + <span class="number">1</span>) &#123;</span><br><span class="line">      fa[cur] = q;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="type">int</span> nw = ++tot;</span><br><span class="line">      fa[nw] = fa[q], len[nw] = len[p] + <span class="number">1</span>;</span><br><span class="line">      <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">26</span>; ++i)</span><br><span class="line">        nxt[nw][i] = nxt[q][i];</span><br><span class="line">      fa[q] = fa[cur] = nw;</span><br><span class="line">      <span class="keyword">for</span> (; p &amp;&amp; nxt[p][c] == q; p = fa[p]) nxt[p][c] = nw;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs</span><span class="params">(<span class="type">int</span> u)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> v : G[u]) &#123;</span><br><span class="line">    <span class="built_in">dfs</span>(v);</span><br><span class="line">    sz[u] += sz[v];</span><br><span class="line">    ans += (i64)sz[v] * (n - sz[v]) * (len[v] - len[u]);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dickdreamer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::string s;</span><br><span class="line">  std::cin &gt;&gt; s;</span><br><span class="line">  n = s.<span class="built_in">size</span>();</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = n - <span class="number">1</span>; ~i; --i)</span><br><span class="line">    <span class="built_in">ins</span>(s[i] - <span class="string">&#x27;a&#x27;</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">2</span>; i &lt;= tot; ++i)</span><br><span class="line">    G[fa[i]].<span class="built_in">emplace_back</span>(i);</span><br><span class="line">  <span class="built_in">dfs</span>(<span class="number">1</span>);</span><br><span class="line">  std::cout &lt;&lt; ans &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int32_t</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> ORZXKR</span></span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;in.txt&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;out.txt&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">  std::ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>), std::cin.<span class="built_in">tie</span>(<span class="number">0</span>), std::cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="type">int</span> T = <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// std::cin &gt;&gt; T;</span></span><br><span class="line">  <span class="keyword">while</span> (T--) <span class="built_in">dickdreamer</span>();</span><br><span class="line">  <span class="comment">// std::cerr &lt;&lt; 1.0 * clock() / CLOCKS_PER_SEC &lt;&lt; &quot;s\n&quot;;</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>题解</category>
-        <category>字符串</category>
-        <category>后缀自动机</category>
-      </categories>
-      <tags>
-        <tag>题解</tag>
-        <tag>洛谷</tag>
-        <tag>字符串</tag>
-        <tag>后缀自动机</tag>
       </tags>
   </entry>
   <entry>
@@ -284,6 +206,285 @@ class="math inline">\(j\)</span>，不过不管它对结果没什么影响。</p
         <tag>思维</tag>
         <tag>二分</tag>
         <tag>BFS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>P3573 [POI2014] RAJ-Rally 题解</title>
+    <url>/2023/07/07/P3573-POI2014-RAJ-Rally-%E9%A2%98%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="description">Description</h2>
+<p>给定一个 <span class="math inline">\(n\)</span> 个点 <span
+class="math inline">\(m\)</span> 条边的有向无环图，每条边长度都是 <span
+class="math inline">\(1\)</span>。</p>
+<p>请找到一个点，使得删掉这个点后剩余的图中的最长路径最短。</p>
+<p><span class="math inline">\(n\leq 5\times 10^5,m\leq
+10^6\)</span>。</p>
+<span id="more"></span>
+<h2 id="solution">Solution</h2>
+<p>设 <span class="math inline">\(f_i\)</span> 表示以 <span
+class="math inline">\(i\)</span> 为终点的最长路，<span
+class="math inline">\(g_i\)</span> 表示以 <span
+class="math inline">\(i\)</span> 为起点的最长路，<span
+class="math inline">\(d_i\)</span> 为 <span
+class="math inline">\(i\)</span> 的拓扑序。</p>
+<p>这两个显然可以通过拓扑排序求出。</p>
+<p>易知原图中的任何一个路径上的点的拓扑序一定是递增的，所以删掉一个点
+<span class="math inline">\(u\)</span>，剩余的路径只有 <span
+class="math inline">\(f_i(d_i&lt;d_u),g_i(d_i&gt;d_u),f_i+g_j+1(d_i&lt;d_u&lt;d_j)\)</span>
+三种可能。</p>
+<p>那么就可以维护三个 multiset，分别维护 <span
+class="math inline">\(f_i(d_i&lt;d_u),g_i(d_i&gt;d_u),f_i+g_j+1(d_i&lt;d_u&lt;d_j)\)</span>。</p>
+<p>前两个直接在从小到大枚举 <span class="math inline">\(d_u\)</span>
+的时候增删，第三个可以每次先加入 <span
+class="math inline">\(d_i=d_u-1\)</span> 的所有边，然后删去 <span
+class="math inline">\(d_j=d_u\)</span> 的所有边，这样可以保证 <span
+class="math inline">\(d_i&lt;d_u\)</span> 且 <span
+class="math inline">\(d_j&gt;d_u\)</span>。</p>
+<p>时间复杂度：<span class="math inline">\(O((n+m)\log
+(n+m))\)</span>。</p>
+<h2 id="code">Code</h2>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cassert&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;set&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// #define int int64_t</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> kMaxN = <span class="number">5e5</span> + <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n, m, cnt;</span><br><span class="line"><span class="type">int</span> id[kMaxN], deg[kMaxN], f[kMaxN], g[kMaxN];</span><br><span class="line">std::vector&lt;<span class="type">int</span>&gt; G[kMaxN], rG[kMaxN];</span><br><span class="line">std::multiset&lt;<span class="type">int</span>&gt; s1, s2, s3;</span><br><span class="line"></span><br><span class="line"><span class="comment">// s1 : f[u]</span></span><br><span class="line"><span class="comment">// s2 : g[u]</span></span><br><span class="line"><span class="comment">// s3 : f[u] + g[v] + 1(u &lt; i &lt; v)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">topo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::queue&lt;<span class="type">int</span>&gt; q;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!deg[i]) &#123;</span><br><span class="line">      q.<span class="built_in">emplace</span>(i), f[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">while</span> (!q.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">    <span class="type">int</span> u = q.<span class="built_in">front</span>();</span><br><span class="line">    q.<span class="built_in">pop</span>();</span><br><span class="line">    id[++cnt] = u;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> v : G[u]) &#123;</span><br><span class="line">      f[v] = std::<span class="built_in">max</span>(f[v], f[u] + <span class="number">1</span>);</span><br><span class="line">      <span class="keyword">if</span> (!--deg[v])</span><br><span class="line">        q.<span class="built_in">emplace</span>(v);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dickdreamer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::cin &gt;&gt; n &gt;&gt; m;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; ++i) &#123;</span><br><span class="line">    <span class="type">int</span> u, v;</span><br><span class="line">    std::cin &gt;&gt; u &gt;&gt; v;</span><br><span class="line">    G[u].<span class="built_in">emplace_back</span>(v), rG[v].<span class="built_in">emplace_back</span>(u);</span><br><span class="line">    ++deg[v];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">topo</span>();</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = n; i; --i) &#123;</span><br><span class="line">    <span class="type">int</span> u = id[i];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> v : G[u])</span><br><span class="line">      g[u] = std::<span class="built_in">max</span>(g[u], g[v] + <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i)</span><br><span class="line">    s2.<span class="built_in">emplace</span>(-g[i]);</span><br><span class="line">  <span class="type">int</span> ans = <span class="number">1e9</span>, idx = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    <span class="type">int</span> u = id[i];</span><br><span class="line">    <span class="keyword">if</span> (i) &#123;</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">auto</span> v : G[id[i - <span class="number">1</span>]])</span><br><span class="line">        s3.<span class="built_in">emplace</span>(-(f[id[i - <span class="number">1</span>]] + g[v] + <span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> v : rG[u]) &#123;</span><br><span class="line">      s3.<span class="built_in">erase</span>(s3.<span class="built_in">lower_bound</span>(-(f[v] + g[u] + <span class="number">1</span>)));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (i) s1.<span class="built_in">emplace</span>(-f[id[i - <span class="number">1</span>]]);</span><br><span class="line">    s2.<span class="built_in">erase</span>(s2.<span class="built_in">lower_bound</span>(-g[u]));</span><br><span class="line">    <span class="type">int</span> mx = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!s1.<span class="built_in">empty</span>()) mx = std::<span class="built_in">max</span>(mx, -*s1.<span class="built_in">begin</span>());</span><br><span class="line">    <span class="keyword">if</span> (!s2.<span class="built_in">empty</span>()) mx = std::<span class="built_in">max</span>(mx, -*s2.<span class="built_in">begin</span>());</span><br><span class="line">    <span class="keyword">if</span> (!s3.<span class="built_in">empty</span>()) mx = std::<span class="built_in">max</span>(mx, -*s3.<span class="built_in">begin</span>());</span><br><span class="line">    <span class="keyword">if</span> (mx &lt; ans) &#123;</span><br><span class="line">      ans = mx, idx = u;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  std::cout &lt;&lt; idx &lt;&lt; <span class="string">&#x27; &#x27;</span> &lt;&lt; ans &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int32_t</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> ORZXKR</span></span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;in.txt&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;out.txt&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">  std::ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>), std::cin.<span class="built_in">tie</span>(<span class="number">0</span>), std::cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="type">int</span> T = <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// std::cin &gt;&gt; T;</span></span><br><span class="line">  <span class="keyword">while</span> (T--) <span class="built_in">dickdreamer</span>();</span><br><span class="line">  <span class="comment">// std::cerr &lt;&lt; 1.0 * clock() / CLOCKS_PER_SEC &lt;&lt; &quot;s\n&quot;;</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>题解</category>
+        <category>图论</category>
+        <category>拓扑排序</category>
+      </categories>
+      <tags>
+        <tag>题解</tag>
+        <tag>洛谷</tag>
+        <tag>图论</tag>
+        <tag>拓扑排序</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CF932E Team Work 题解</title>
+    <url>/2023/08/16/CF932E-Team-Work-%E9%A2%98%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="description">Description</h2>
+<p>给定 <span class="math inline">\(n,k\)</span>，求：</p>
+<p><span
+class="math display">\[\displaystyle\sum_{i=1}^{n}{\binom{n}{i}\times
+i^k}\]</span></p>
+<p><span class="math inline">\(1\leq k\leq 5000,1\leq n\leq
+10^9\)</span>。</p>
+<span id="more"></span>
+<h2 id="solution">Solution</h2>
+<p>看到那个 <span class="math inline">\(i^k\)</span> 很不爽，但是 <span
+class="math inline">\(k\)</span> 很小，考虑用斯特林数改写一下：</p>
+<p><span class="math display">\[i^k=\sum_{j=0}^{k}{\binom{i}{j}\left \{
+\begin{matrix} k\\ j \end{matrix} \right \}\cdot j!}\]</span></p>
+<p>代回原式得：</p>
+<p><span class="math display">\[\displaystyle
+\begin{aligned}
+&amp;\sum_{i=0}^{n}{\binom{n}{i}\cdot\sum_{j=0}^{k}{\binom{i}{j}\left \{
+{\begin{matrix} k\\ j \end{matrix}} \right \} j!} }\\
+=&amp;\sum_{j=0}^{k}{j!\left\{\begin{matrix}k\\j\end{matrix}\right\}\cdot\sum_{i=0}^{n}{\binom{n}{i}\binom{i}{j}}}\\
+=&amp;\sum_{j=0}^{k}{j!\left\{\begin{matrix}k\\j\end{matrix}\right\}\cdot\sum_{i=j}^{n}{\frac{n!}{i!(n-i)!}\cdot
+\frac{i!}{j!(i-j)!}}}\\
+=&amp;n!\sum_{j=0}^{k}{\left\{\begin{matrix}k\\j\end{matrix}\right\}\cdot\sum_{i=j}^{n}{\frac{\binom{n-j}{i-j}}{(n-j)!}}}\\
+=&amp;n!\sum_{j=0}^{k}{\frac{1}{(n-j)!}\left\{\begin{matrix}k\\j\end{matrix}\right\}\sum_{i=0}^{n-j}{\binom{n-j}{i}}}\\
+=&amp;n!\sum_{j=0}^{k}{\frac{2^{n-j}}{(n-j)!}\cdot
+\left\{\begin{matrix}k\\j\end{matrix}\right\}}\\
+\end{aligned}\]</span></p>
+<p>于是直接预处理出斯特林数即可做到 <span
+class="math inline">\(O(k^2+k\log
+n)\)</span>，如果用卷积预处理的话就可以做到 <span
+class="math inline">\(O(k\log k+k\log n)\)</span>。</p>
+<h2 id="code">Code</h2>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// #define int int64_t</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> i64 = <span class="type">int64_t</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> kMod = <span class="number">1e9</span> + <span class="number">7</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> s[<span class="number">5005</span>][<span class="number">5005</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">qpow</span><span class="params">(<span class="type">int</span> bs, <span class="type">int</span> idx = kMod - <span class="number">2</span>)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> ret = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (; idx; idx &gt;&gt;= <span class="number">1</span>, bs = (i64)bs * bs % kMod)</span><br><span class="line">    <span class="keyword">if</span> (idx &amp; <span class="number">1</span>)</span><br><span class="line">      ret = (i64)ret * bs % kMod;</span><br><span class="line">  <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dickdreamer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> n, k, ans = <span class="number">0</span>;</span><br><span class="line">  std::cin &gt;&gt; n &gt;&gt; k;</span><br><span class="line">  s[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= k; ++i) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt;= i; ++j) &#123;</span><br><span class="line">      s[i][j] = (s[i - <span class="number">1</span>][j - <span class="number">1</span>] + (i64)j * s[i - <span class="number">1</span>][j] % kMod) % kMod;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>, c = <span class="number">1</span>; i &lt;= std::<span class="built_in">min</span>(n, k); ++i) &#123;</span><br><span class="line">    ans = (ans + (i64)s[k][i] * c % kMod * <span class="built_in">qpow</span>(<span class="number">2</span>, n - i) % kMod) % kMod;</span><br><span class="line">    c = (i64)c * (n - i) % kMod;</span><br><span class="line">  &#125;</span><br><span class="line">  std::cout &lt;&lt; ans &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int32_t</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> ORZXKR</span></span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;in.txt&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;out.txt&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">  std::ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>), std::cin.<span class="built_in">tie</span>(<span class="number">0</span>), std::cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="type">int</span> T = <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// std::cin &gt;&gt; T;</span></span><br><span class="line">  <span class="keyword">while</span> (T--) <span class="built_in">dickdreamer</span>();</span><br><span class="line">  <span class="comment">// std::cerr &lt;&lt; 1.0 * clock() / CLOCKS_PER_SEC &lt;&lt; &quot;s\n&quot;;</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>题解</category>
+        <category>数学</category>
+        <category>斯特林数</category>
+      </categories>
+      <tags>
+        <tag>题解</tag>
+        <tag>数学</tag>
+        <tag>Codeforces</tag>
+        <tag>斯特林数</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>P4248 [AHOI2013] 差异 题解</title>
+    <url>/2023/07/22/P4248-AHOI2013-%E5%B7%AE%E5%BC%82-%E9%A2%98%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="description">Description</h2>
+<p>给定一个长度为 <span class="math inline">\(n\)</span> 的字符串 <span
+class="math inline">\(S\)</span>，令 <span
+class="math inline">\(T_i\)</span> 表示它从第 <span
+class="math inline">\(i\)</span> 个字符开始的后缀。求 <span
+class="math inline">\(\displaystyle \sum_{1\leq ij\leq
+n}\text{len}(T_i)+\text{len}(T_j)-2\times\text{lcp}(T_i,T_j)\)</span>。</p>
+<p>其中，<span class="math inline">\(\text{len}(a)\)</span> 表示字符串
+<span class="math inline">\(a\)</span> 的长度，<span
+class="math inline">\(\text{lcp}(a,b)\)</span> 表示字符串 <span
+class="math inline">\(a\)</span> 和字符串 <span
+class="math inline">\(b\)</span> 的最长公共前缀。</p>
+<p><a href="https://www.luogu.com.cn/problem/P4248">link</a></p>
+<span id="more"></span>
+<h2 id="solution">Solution</h2>
+<p>考虑把 <span class="math inline">\(S\)</span> 的反串的 parent
+树建出来。</p>
+<p>设 <span class="math inline">\(T_i\)</span> 的 endpos 等价类是 <span
+class="math inline">\(x\)</span>，<span
+class="math inline">\(T_j\)</span> 的 endpos 等价类是 <span
+class="math inline">\(y\)</span>。</p>
+<p>由于 parent 树上任意一个点的父亲一定是这个点的后缀，所以 <span
+class="math inline">\(T_i\)</span> 和 <span
+class="math inline">\(T_j\)</span> 的公共前缀一定就在反串 parent 树上
+<span class="math inline">\(x\)</span> 和 <span
+class="math inline">\(y\)</span>
+某个公共祖先所表示的等价类里，而最长的一定就在 <span
+class="math inline">\(x\)</span> 和 <span
+class="math inline">\(y\)</span> 的 LCA 上。</p>
+<p>由于 <span class="math inline">\(T_i,T_j\)</span> 和 <span
+class="math inline">\(\text{lcp}(T_i,T_j)\)</span>
+一定都是反串的前缀，所以他们的长度一定都是所在等价类最大的，那么 <span
+class="math inline">\(\text{len}(T_i)+\text{len}(T_j)-2\times\text{lcp}(T_i,T_j)\)</span>
+就等于 <span class="math inline">\(\text{len}_x+\text{len}_y-2\times
+\text{len}_\text{lca}\)</span>，如果把 parent 树的边权看作相邻两点 <span
+class="math inline">\(\text{len}\)</span> 的差值，那么原式就是 <span
+class="math inline">\(x,y\)</span> 的树上最短路径的长度。</p>
+<p>然后对于每条边算贡献即可，即设 <span
+class="math inline">\(\text{size}_x\)</span> 表示 <span
+class="math inline">\(x\)</span>
+的子树里反串前缀所在的等价类的个数，答案就是 <span
+class="math inline">\(\displaystyle\sum\left(\text{size}_x\times(n-\text{size}_x)\times(\text{len}_x-\text{len}_\text{fa})\right)\)</span>。</p>
+<p>时间复杂度：<span class="math inline">\(O(n)\)</span>。</p>
+<h2 id="code">Code</h2>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// #define int int64_t</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> kMaxN = <span class="number">1e6</span> + <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> i64 = <span class="type">int64_t</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n, tot = <span class="number">1</span>, lst = <span class="number">1</span>, nxt[kMaxN][<span class="number">26</span>], len[kMaxN], fa[kMaxN], sz[kMaxN];</span><br><span class="line">i64 ans;</span><br><span class="line">std::vector&lt;<span class="type">int</span>&gt; G[kMaxN];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">ins</span><span class="params">(<span class="type">int</span> c)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> cur = ++tot, p = lst;</span><br><span class="line">  lst = cur;</span><br><span class="line">  len[cur] = len[p] + <span class="number">1</span>, sz[cur] = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (; p &amp;&amp; !nxt[p][c]; p = fa[p]) nxt[p][c] = cur;</span><br><span class="line">  <span class="keyword">if</span> (!p) &#123;</span><br><span class="line">    fa[cur] = <span class="number">1</span>;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="type">int</span> q = nxt[p][c];</span><br><span class="line">    <span class="keyword">if</span> (len[q] == len[p] + <span class="number">1</span>) &#123;</span><br><span class="line">      fa[cur] = q;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="type">int</span> nw = ++tot;</span><br><span class="line">      fa[nw] = fa[q], len[nw] = len[p] + <span class="number">1</span>;</span><br><span class="line">      <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">26</span>; ++i)</span><br><span class="line">        nxt[nw][i] = nxt[q][i];</span><br><span class="line">      fa[q] = fa[cur] = nw;</span><br><span class="line">      <span class="keyword">for</span> (; p &amp;&amp; nxt[p][c] == q; p = fa[p]) nxt[p][c] = nw;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs</span><span class="params">(<span class="type">int</span> u)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> v : G[u]) &#123;</span><br><span class="line">    <span class="built_in">dfs</span>(v);</span><br><span class="line">    sz[u] += sz[v];</span><br><span class="line">    ans += (i64)sz[v] * (n - sz[v]) * (len[v] - len[u]);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dickdreamer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::string s;</span><br><span class="line">  std::cin &gt;&gt; s;</span><br><span class="line">  n = s.<span class="built_in">size</span>();</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = n - <span class="number">1</span>; ~i; --i)</span><br><span class="line">    <span class="built_in">ins</span>(s[i] - <span class="string">&#x27;a&#x27;</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">2</span>; i &lt;= tot; ++i)</span><br><span class="line">    G[fa[i]].<span class="built_in">emplace_back</span>(i);</span><br><span class="line">  <span class="built_in">dfs</span>(<span class="number">1</span>);</span><br><span class="line">  std::cout &lt;&lt; ans &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int32_t</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> ORZXKR</span></span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;in.txt&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;out.txt&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">  std::ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>), std::cin.<span class="built_in">tie</span>(<span class="number">0</span>), std::cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="type">int</span> T = <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// std::cin &gt;&gt; T;</span></span><br><span class="line">  <span class="keyword">while</span> (T--) <span class="built_in">dickdreamer</span>();</span><br><span class="line">  <span class="comment">// std::cerr &lt;&lt; 1.0 * clock() / CLOCKS_PER_SEC &lt;&lt; &quot;s\n&quot;;</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>题解</category>
+        <category>字符串</category>
+        <category>后缀自动机</category>
+      </categories>
+      <tags>
+        <tag>题解</tag>
+        <tag>洛谷</tag>
+        <tag>字符串</tag>
+        <tag>后缀自动机</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>P7987 [USACO21DEC] Paired Up G 题解</title>
+    <url>/2023/08/22/P7987-USACO21DEC-Paired-Up-G-%E9%A2%98%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="description">Description</h2>
+<p>数轴上总计有 <span class="math inline">\(N\)</span>（<span
+class="math inline">\(1\le N\le 10^5\)</span>）头奶牛。第 <span
+class="math inline">\(i\)</span> 头奶牛的位置为 <span
+class="math inline">\(x_i\)</span>（<span class="math inline">\(0 \leq
+x_i \leq 10^9\)</span>），而第 <span class="math inline">\(i\)</span>
+头奶牛的重量为 <span class="math inline">\(y_i\)</span>（<span
+class="math inline">\(1 \leq y_i \leq 10^4\)</span>）。</p>
+<p>根据 Farmer John 的信号，某些奶牛会组成对，使得</p>
+<ul>
+<li><p>每一对包含位置相差不超过 <span class="math inline">\(K\)</span>
+的两头不同的奶牛 <span class="math inline">\(a\)</span> 和 <span
+class="math inline">\(b\)</span>（<span class="math inline">\(1\le K\le
+10^9\)</span>）；也就是说，<span class="math inline">\(|x_a-x_b|\le
+K\)</span>。</p></li>
+<li><p>每一头奶牛要么包含在恰好一对中，要么不属于任何一对。</p></li>
+<li><p><strong>配对是极大的</strong>；也就是说，没有两头未配对的奶牛可以组成对。</p></li>
+</ul>
+<p>你需要求出未配对的奶牛的重量之和的可能的范围。具体地说，</p>
+<ul>
+<li>如果 <span
+class="math inline">\(T=1\)</span>，计算未配对的奶牛的最小重量和。</li>
+<li>如果 <span
+class="math inline">\(T=2\)</span>，计算未配对的奶牛的最大重量和。</li>
+</ul>
+<p><a href="https://www.luogu.com.cn/problem/P7987">link</a></p>
+<span id="more"></span>
+<h2 id="solution">Solution</h2>
+<p>先把位置排个序，如果是问最大值那么就每个数乘 <span
+class="math inline">\(-1\)</span>，最后取反即可。</p>
+<p>注意到如果把所有没有配对的奶牛删掉，剩下的奶牛一定满足相邻的位置差
+<span class="math inline">\(\leq k\)</span>。</p>
+<p>考虑 DP。</p>
+<p>设 <span class="math inline">\(f_{i,0/1}\)</span> 表示已经处理了
+<span class="math inline">\(1\sim i\)</span> 这些奶牛，删掉了 偶数/奇数
+头奶牛，删掉的奶牛的总和最小值，<span class="math inline">\(l\)</span>
+表示位置 <span class="math inline">\(&lt; x_i-k\)</span>
+的位置最大的奶牛，<span class="math inline">\(j=i\bmod 2\)</span>。</p>
+<p>然后就是分类讨论：</p>
+<ol type="1">
+<li><p><span class="math inline">\(1\sim i-1\)</span>
+<strong>剩下</strong>偶数个</p>
+<ul>
+<li><p><span class="math inline">\(i\)</span> 删掉</p>
+<p>那么 <span class="math inline">\(1\sim i\)</span>
+仍然剩下偶数个，并且上一个删掉的一定在 <span
+class="math inline">\(l\)</span> 之前，所以 <span
+class="math inline">\(f_{i,j}\leftarrow
+f_{l,1-j}+y_i\)</span>。</p></li>
+<li><p><span class="math inline">\(i\)</span> 不删</p>
+<p>那么 <span class="math inline">\(1\sim i\)</span>
+剩下奇数个，并且要满足 <span class="math inline">\(x_{i+1}-x_{i}\leq
+k\)</span>，因为这时候 <span class="math inline">\(i\)</span>
+是剩下的编号为奇数的奶牛，要和 <span class="math inline">\(i+1\)</span>
+之后的奶牛进行配对，一定要满足这个条件。所以 <span
+class="math inline">\(f_{i,1-j}\leftarrow
+f_{i-1,1-j}\)</span>。</p></li>
+</ul></li>
+<li><p><span class="math inline">\(1\sim i-1\)</span>
+<strong>剩下</strong>奇数个</p>
+<ul>
+<li><p><span class="math inline">\(i\)</span> 删掉</p>
+<p>上一个删掉的一定在 <span class="math inline">\(l\)</span>
+之前，并且这时 <span class="math inline">\(i-1\)</span> 要和 <span
+class="math inline">\(i+1\)</span> 之后的奶牛进行配对，所以要满足 <span
+class="math inline">\(x_{i+1}-x_{i-1}\leq k\)</span>。那么 <span
+class="math inline">\(f_{i,1-j}\leftarrow
+f_{l,j}+y_i\)</span>。</p></li>
+<li><p><span class="math inline">\(i\)</span> 不删</p>
+<p>那么 <span class="math inline">\(1\sim i\)</span> 剩下偶数个，并且
+<span class="math inline">\(i\)</span> 和 <span
+class="math inline">\(i-1\)</span> 及之前的要配对，所以满足 <span
+class="math inline">\(x_{i}-x_{i-1}\leq k\)</span> 才可以转移，则 <span
+class="math inline">\(f_{i,j}\leftarrow f_{i-1,j}\)</span>。</p></li>
+</ul></li>
+</ol>
+<p>时间复杂度：<span class="math inline">\(O(n)\)</span>。</p>
+<hr />
+<p>其实仔细思考会发现上面状态转移的条件只是<strong>必要</strong>的，不够<strong>充分</strong>，下面证明下各个转移的条件放到一起为啥就对了。</p>
+<p>先假设 <span class="math inline">\(1\sim i-1\)</span>
+的条件都是正确的，那么 2,2 里面如果不满足 <span
+class="math inline">\(x_i-x_{i-1}\leq k\)</span>，显然 <span
+class="math inline">\(i\)</span>
+前面那个没被删的就找不到和他配对的了。满足了 <span
+class="math inline">\(x_{i}-x_{i-1}\leq
+k\)</span>，状态就相当于转化为“<span class="math inline">\(1\sim
+i-1\)</span>，<strong>剩下</strong>了奇数个奶牛”，也就是状态 1.2 和
+2.1，1.2 的条件满足了 <span class="math inline">\(i-1\)</span>
+不删的情况。2.1 由于 <span
+class="math inline">\(x_l&lt;x_{i-1}-k\)</span>，所以 <span
+class="math inline">\(l+1\sim i-2\)</span> 都没删，所以 <span
+class="math inline">\(1\sim i-1\)</span> 那个编号最大的没删的一定是
+<span class="math inline">\(i-2\)</span>，所以 <span
+class="math inline">\(i-2\)</span> 要与 <span
+class="math inline">\(i\)</span> 配对，条件就派上了用场。</p>
+<p>然后是 1.2，如果不满足 <span class="math inline">\(x_{i+1}-x_i\leq
+k\)</span>，<span class="math inline">\(i\)</span>
+就找不到他后面的奶牛了，显然不行。满足了 <span
+class="math inline">\(x_{i+1}-x_i\leq k\)</span>，相当于钦定 <span
+class="math inline">\(i\)</span> 能找到后面的，那么 <span
+class="math inline">\(f_{i-1,1-j}\)</span> 就可以直接转移了。</p>
+<p>最后是 2.1，由 2.2 的分析可知 <span class="math inline">\(1\sim
+i\)</span> 里面最后的一个没删的奶牛一定是 <span
+class="math inline">\(i-1\)</span>，钦定他能找到后面的，就可以直接转移。</p>
+<p>综上所述，1.2 和 2.1 相当于钦定后面满足的条件，然后 2.2
+的条件刚好符合 1.2 和 2.1 所钦定的条件，即可转移得万无一失。</p>
+<h2 id="code">Code</h2>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> int int64_t</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> kMaxN = <span class="number">1e5</span> + <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> t, n, k, op = <span class="number">1</span>;</span><br><span class="line"><span class="type">int</span> f[kMaxN][<span class="number">2</span>];</span><br><span class="line">std::pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt; a[kMaxN];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dickdreamer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::cin &gt;&gt; t &gt;&gt; n &gt;&gt; k;</span><br><span class="line">  <span class="keyword">if</span> (t == <span class="number">2</span>) op = <span class="number">-1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    std::cin &gt;&gt; a[i].first &gt;&gt; a[i].second;</span><br><span class="line">    a[i].second *= op;</span><br><span class="line">  &#125;</span><br><span class="line">  std::<span class="built_in">sort</span>(a + <span class="number">1</span>, a + <span class="number">1</span> + n);</span><br><span class="line">  <span class="built_in">memset</span>(f, <span class="number">0x3f</span>, <span class="built_in">sizeof</span>(f));</span><br><span class="line">  f[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">  a[<span class="number">0</span>].first = <span class="number">-1e12</span>, a[n + <span class="number">1</span>].first = <span class="number">1e12</span>;</span><br><span class="line">  <span class="type">int</span> lst = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    <span class="keyword">for</span> (; a[lst + <span class="number">1</span>].first &lt; a[i].first - k; ++lst) &#123;&#125;</span><br><span class="line">    <span class="type">int</span> j = (i &amp; <span class="number">1</span>);</span><br><span class="line">    f[i][j] = std::<span class="built_in">min</span>(f[i][j], f[lst][j ^ <span class="number">1</span>] + a[i].second);</span><br><span class="line">    <span class="keyword">if</span> (a[i + <span class="number">1</span>].first - a[i].first &lt;= k) f[i][j ^ <span class="number">1</span>] = std::<span class="built_in">min</span>(f[i][j ^ <span class="number">1</span>], f[i - <span class="number">1</span>][j ^ <span class="number">1</span>]);</span><br><span class="line">    <span class="keyword">if</span> (a[i + <span class="number">1</span>].first - a[i - <span class="number">1</span>].first &lt;= k) f[i][j ^ <span class="number">1</span>] = std::<span class="built_in">min</span>(f[i][j ^ <span class="number">1</span>], f[lst][j] + a[i].second);</span><br><span class="line">    <span class="keyword">if</span> (a[i].first - a[i - <span class="number">1</span>].first &lt;= k) f[i][j] = std::<span class="built_in">min</span>(f[i][j], f[i - <span class="number">1</span>][j]);</span><br><span class="line">  &#125;</span><br><span class="line">  std::cout &lt;&lt; f[n][n &amp; <span class="number">1</span>] * op &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int32_t</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> ORZXKR</span></span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;in.txt&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;out.txt&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">  std::ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>), std::cin.<span class="built_in">tie</span>(<span class="number">0</span>), std::cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="type">int</span> T = <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// std::cin &gt;&gt; T;</span></span><br><span class="line">  <span class="keyword">while</span> (T--) <span class="built_in">dickdreamer</span>();</span><br><span class="line">  <span class="comment">// std::cerr &lt;&lt; 1.0 * clock() / CLOCKS_PER_SEC &lt;&lt; &quot;s\n&quot;;</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>题解</category>
+        <category>DP</category>
+      </categories>
+      <tags>
+        <tag>题解</tag>
+        <tag>DP</tag>
+        <tag>USACO</tag>
       </tags>
   </entry>
   <entry>
@@ -417,6 +618,86 @@ class="math inline">\(f_{k,j,0}\)</span>，这就把无效数的影响解决了�
       </tags>
   </entry>
   <entry>
+    <title>扫描线学习笔记</title>
+    <url>/2023/06/28/%E6%89%AB%E6%8F%8F%E7%BA%BF%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<h2 id="part-0-前言">Part 0 前言</h2>
+<p>其实很久以前就自己看过扫描线，但是由于水平不够+没搞懂的不去搞所以也就今天才真正弄明白了。</p>
+<span id="more"></span>
+<h2 id="part-1-算法用途">Part 1 算法用途</h2>
+<p>解决在坐标轴上一些与图形有关的问题，包括一堆矩形并的面积、周长等等。</p>
+<h2 id="part-2-算法思想">Part 2 算法思想</h2>
+<p>顾名思义，就是用一条线在坐标轴上扫来扫去。</p>
+<p>以求矩形并的面积为例：</p>
+<p>现在有 <span class="math inline">\(n\)</span> 个矩形，矩形的四个点的
+<span class="math inline">\(x\)</span> 和 <span
+class="math inline">\(y\)</span> 坐标都 <span class="math inline">\(\in
+[0,10^9]\)</span> 且为整点，问这些矩形并起来的面积（<span
+class="math inline">\(n\leq 10^5\)</span>）。</p>
+<hr />
+<p>有一个思路就是对于每个矩形暴力打标记，然后看被标记的点数，时间复杂度：<span
+class="math inline">\(O(V^2)\)</span>。</p>
+<p>这样做显然是会爆炸的而且坐标还必须是整数。</p>
+<p>考虑优化。</p>
+<hr />
+<p>注意到值域是远大于 <span class="math inline">\(n\)</span>
+的，所以可以把矩形四个点的 <span class="math inline">\(x\)</span> 和
+<span class="math inline">\(y\)</span>
+离散化下来，这样整个坐标轴就被这些离散化下来的横线和竖线给分割成很多个网格，每个网格里的点是否被标记的状态显然是相同的，所以可以像上面那样暴力打标记，时间复杂度：<span
+class="math inline">\(O(n^2)\)</span>。</p>
+<p>像这样：</p>
+<p><img src="https://s1.ax1x.com/2023/06/28/pCwnt5q.png" /></p>
+<p>就直接求每个标蓝网格的面积即可</p>
+<hr />
+<p>其实算法可以做得更优，设一个矩形为 <span
+class="math inline">\((x_1,y_1)-(x_2,y_2)\)</span>，类似于差分，可以把它拆成入边和出边。</p>
+<p>入边表示在 <span class="math inline">\(x_1\)</span> 把 <span
+class="math inline">\([y_1,y_2]\)</span> 的覆盖层数 <span
+class="math inline">\(+1\)</span>，出边表示在 <span
+class="math inline">\(x_2\)</span> 把 <span
+class="math inline">\([y_1,y_2]\)</span> 覆盖层数 <span
+class="math inline">\(-1\)</span>，然后依次扫描离散化出来的线，最后被需要计入总答案的就是当前覆盖层数
+<span class="math inline">\(\geq 1\)</span> 的线段总长度 <span
+class="math inline">\(\times\)</span>
+当前两条相邻的线截出的长度，直接数据结构维护可以做到 <span
+class="math inline">\(O(n\log n)\)</span>（详细维护方法见例题）。</p>
+<hr />
+<p>上面就是扫描线的流程，也就是把直线离散化然后对于被两条相邻的线截开的区域用数据结构维护。</p>
+<h2 id="part-3-例题">Part 3 例题</h2>
+<h3 id="p5490-模板扫描线"><a
+href="https://www.luogu.com.cn/problem/P5490">P5490
+【模板】扫描线</a></h3>
+<p>就是上面的模板，然后用线段树维护。</p>
+<p>由于要维护当前覆盖层数 <span class="math inline">\(\geq 1\)</span>
+的点的个数，考虑记录区间 <span class="math inline">\(\min\)</span>
+值、区间 <span class="math inline">\(\min\)</span>
+值出现的线段的长度和区间不为 <span class="math inline">\(0\)</span>
+的所有线段的长度。</p>
+<p>这个显然是可以维护的，前两个直接搞。后面的那个如果区间 <span
+class="math inline">\(\min\)</span> 值为 <span
+class="math inline">\(0\)</span>，答案就是区间总长度 <span
+class="math inline">\(-\)</span> 区间 <span
+class="math inline">\(\min\)</span> 值的线段长度。</p>
+<p>如果区间 <span class="math inline">\(\min\)</span> 值不为 <span
+class="math inline">\(0\)</span>，答案就是区间总长度。</p>
+<p>时间复杂度：<span class="math inline">\(O(n\log n)\)</span>。</p>
+<h4 id="code">Code</h4>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;tuple&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> int long long</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> kMaxN = <span class="number">2e5</span> + <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n, m, k;</span><br><span class="line"><span class="type">int</span> x1[kMaxN], y1[kMaxN], x2[kMaxN], y2[kMaxN], b[kMaxN], lsh[kMaxN];</span><br><span class="line"><span class="type">int</span> sum[kMaxN &lt;&lt; <span class="number">2</span>], mini[kMaxN &lt;&lt; <span class="number">2</span>], cnt[kMaxN &lt;&lt; <span class="number">2</span>], tag[kMaxN &lt;&lt; <span class="number">2</span>];</span><br><span class="line">std::vector&lt;std::tuple&lt;<span class="type">int</span>, <span class="type">int</span>, <span class="type">int</span>&gt;&gt; v[kMaxN];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">discrete</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::<span class="built_in">sort</span>(b + <span class="number">1</span>, b + <span class="number">1</span> + m), std::<span class="built_in">sort</span>(lsh + <span class="number">1</span>, lsh + <span class="number">1</span> + k);</span><br><span class="line">  m = std::<span class="built_in">unique</span>(b + <span class="number">1</span>, b + <span class="number">1</span> + m) - (b + <span class="number">1</span>);</span><br><span class="line">  k = std::<span class="built_in">unique</span>(lsh + <span class="number">1</span>, lsh + <span class="number">1</span> + k) - (lsh + <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    y1[i] = std::<span class="built_in">lower_bound</span>(lsh + <span class="number">1</span>, lsh + <span class="number">1</span> + k, y1[i]) - lsh;</span><br><span class="line">    y2[i] = std::<span class="built_in">lower_bound</span>(lsh + <span class="number">1</span>, lsh + <span class="number">1</span> + k, y2[i]) - lsh;</span><br><span class="line">    v[std::<span class="built_in">lower_bound</span>(b + <span class="number">1</span>, b + <span class="number">1</span> + m, x1[i]) - b].<span class="built_in">emplace_back</span>(y1[i], y2[i], <span class="number">1</span>);</span><br><span class="line">    v[std::<span class="built_in">lower_bound</span>(b + <span class="number">1</span>, b + <span class="number">1</span> + m, x2[i]) - b].<span class="built_in">emplace_back</span>(y1[i], y2[i], <span class="number">-1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pushup</span><span class="params">(<span class="type">int</span> x)</span> </span>&#123;</span><br><span class="line">  sum[x] = sum[x &lt;&lt; <span class="number">1</span>] + sum[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>];</span><br><span class="line">  <span class="keyword">if</span> (mini[x &lt;&lt; <span class="number">1</span>] &lt; mini[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>]) &#123;</span><br><span class="line">    mini[x] = mini[x &lt;&lt; <span class="number">1</span>], cnt[x] = cnt[x &lt;&lt; <span class="number">1</span>];</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (mini[x &lt;&lt; <span class="number">1</span>] &gt; mini[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>]) &#123;</span><br><span class="line">    mini[x] = mini[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>], cnt[x] = cnt[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>];</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    mini[x] = mini[x &lt;&lt; <span class="number">1</span>], cnt[x] = cnt[x &lt;&lt; <span class="number">1</span>] + cnt[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">addtag</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> v)</span> </span>&#123;</span><br><span class="line">  tag[x] += v, mini[x] += v;</span><br><span class="line">  <span class="keyword">if</span> (mini[x]) sum[x] = lsh[r + <span class="number">1</span>] - lsh[l];</span><br><span class="line">  <span class="keyword">else</span> sum[x] = lsh[r + <span class="number">1</span>] - lsh[l] - cnt[x];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pushdown</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> l, <span class="type">int</span> r)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!tag[x]) <span class="keyword">return</span>;</span><br><span class="line">  <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">  <span class="built_in">addtag</span>(x &lt;&lt; <span class="number">1</span>, l, mid, tag[x]), <span class="built_in">addtag</span>(x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r, tag[x]);</span><br><span class="line">  tag[x] = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">build</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> l, <span class="type">int</span> r)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (l == r) &#123;</span><br><span class="line">    cnt[x] = lsh[r + <span class="number">1</span>] - lsh[l];</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">  <span class="built_in">build</span>(x &lt;&lt; <span class="number">1</span>, l, mid), <span class="built_in">build</span>(x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r);</span><br><span class="line">  <span class="built_in">pushup</span>(x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">update</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> ql, <span class="type">int</span> qr, <span class="type">int</span> v)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (l &gt; qr || r &lt; ql) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (l &gt;= ql &amp;&amp; r &lt;= qr) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">addtag</span>(x, l, r, v);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">pushdown</span>(x, l, r);</span><br><span class="line">  <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">  <span class="built_in">update</span>(x &lt;&lt; <span class="number">1</span>, l, mid, ql, qr, v), <span class="built_in">update</span>(x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r, ql, qr, v);</span><br><span class="line">  <span class="built_in">pushup</span>(x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dickdreamer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::cin &gt;&gt; n;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    std::cin &gt;&gt; x1[i] &gt;&gt; y1[i] &gt;&gt; x2[i] &gt;&gt; y2[i];</span><br><span class="line">    b[++m] = x1[i]; b[++m] = x2[i];</span><br><span class="line">    lsh[++k] = y1[i]; lsh[++k] = y2[i];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">discrete</span>();</span><br><span class="line">  <span class="type">long</span> <span class="type">long</span> ans = <span class="number">0</span>;</span><br><span class="line">  <span class="built_in">build</span>(<span class="number">1</span>, <span class="number">1</span>, k - <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; m; ++i) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> p : v[i]) &#123;</span><br><span class="line">      <span class="type">int</span> l = std::<span class="built_in">get</span>&lt;<span class="number">0</span>&gt;(p), r = std::<span class="built_in">get</span>&lt;<span class="number">1</span>&gt;(p), c = std::<span class="built_in">get</span>&lt;<span class="number">2</span>&gt;(p);</span><br><span class="line">      <span class="built_in">update</span>(<span class="number">1</span>, <span class="number">1</span>, k - <span class="number">1</span>, l, r - <span class="number">1</span>, c);</span><br><span class="line">    &#125;</span><br><span class="line">    ans += <span class="number">1ll</span> * (b[i + <span class="number">1</span>] - b[i]) * sum[<span class="number">1</span>];</span><br><span class="line">  &#125;</span><br><span class="line">  std::cout &lt;&lt; ans &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int32_t</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>), std::cin.<span class="built_in">tie</span>(<span class="number">0</span>), std::cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="type">int</span> T = <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// cin &gt;&gt; T;</span></span><br><span class="line">  <span class="keyword">while</span> (T--) <span class="built_in">dickdreamer</span>();</span><br><span class="line">  <span class="comment">// std::cerr &lt;&lt; 1.0 * clock() / CLOCKS_PER_SEC &lt;&lt; &#x27;s&#x27; &lt;&lt; endl;</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>未完待续.......</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+        <category>计算几何</category>
+        <category>扫描线</category>
+      </categories>
+      <tags>
+        <tag>学习笔记</tag>
+        <tag>数据结构</tag>
+        <tag>计算几何</tag>
+        <tag>扫描线</tag>
+        <tag>线段树</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>P9371 [APIO2023] 序列 题解</title>
     <url>/2023/06/26/P9371-APIO2023-%E5%BA%8F%E5%88%97-%E9%A2%98%E8%A7%A3/</url>
     <content><![CDATA[<h2 id="description">Description</h2>
@@ -503,211 +784,9 @@ cnt_2\)</span> 时一定不是最优解。）</p>
       </categories>
       <tags>
         <tag>题解</tag>
+        <tag>数据结构</tag>
+        <tag>线段树</tag>
         <tag>APIO</tag>
-        <tag>数据结构</tag>
-        <tag>线段树</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>扫描线学习笔记</title>
-    <url>/2023/06/28/%E6%89%AB%E6%8F%8F%E7%BA%BF%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[<h2 id="part-0-前言">Part 0 前言</h2>
-<p>其实很久以前就自己看过扫描线，但是由于水平不够+没搞懂的不去搞所以也就今天才真正弄明白了。</p>
-<span id="more"></span>
-<h2 id="part-1-算法用途">Part 1 算法用途</h2>
-<p>解决在坐标轴上一些与图形有关的问题，包括一堆矩形并的面积、周长等等。</p>
-<h2 id="part-2-算法思想">Part 2 算法思想</h2>
-<p>顾名思义，就是用一条线在坐标轴上扫来扫去。</p>
-<p>以求矩形并的面积为例：</p>
-<p>现在有 <span class="math inline">\(n\)</span> 个矩形，矩形的四个点的
-<span class="math inline">\(x\)</span> 和 <span
-class="math inline">\(y\)</span> 坐标都 <span class="math inline">\(\in
-[0,10^9]\)</span> 且为整点，问这些矩形并起来的面积（<span
-class="math inline">\(n\leq 10^5\)</span>）。</p>
-<hr />
-<p>有一个思路就是对于每个矩形暴力打标记，然后看被标记的点数，时间复杂度：<span
-class="math inline">\(O(V^2)\)</span>。</p>
-<p>这样做显然是会爆炸的而且坐标还必须是整数。</p>
-<p>考虑优化。</p>
-<hr />
-<p>注意到值域是远大于 <span class="math inline">\(n\)</span>
-的，所以可以把矩形四个点的 <span class="math inline">\(x\)</span> 和
-<span class="math inline">\(y\)</span>
-离散化下来，这样整个坐标轴就被这些离散化下来的横线和竖线给分割成很多个网格，每个网格里的点是否被标记的状态显然是相同的，所以可以像上面那样暴力打标记，时间复杂度：<span
-class="math inline">\(O(n^2)\)</span>。</p>
-<p>像这样：</p>
-<p><img src="https://s1.ax1x.com/2023/06/28/pCwnt5q.png" /></p>
-<p>就直接求每个标蓝网格的面积即可</p>
-<hr />
-<p>其实算法可以做得更优，设一个矩形为 <span
-class="math inline">\((x_1,y_1)-(x_2,y_2)\)</span>，类似于差分，可以把它拆成入边和出边。</p>
-<p>入边表示在 <span class="math inline">\(x_1\)</span> 把 <span
-class="math inline">\([y_1,y_2]\)</span> 的覆盖层数 <span
-class="math inline">\(+1\)</span>，出边表示在 <span
-class="math inline">\(x_2\)</span> 把 <span
-class="math inline">\([y_1,y_2]\)</span> 覆盖层数 <span
-class="math inline">\(-1\)</span>，然后依次扫描离散化出来的线，最后被需要计入总答案的就是当前覆盖层数
-<span class="math inline">\(\geq 1\)</span> 的线段总长度 <span
-class="math inline">\(\times\)</span>
-当前两条相邻的线截出的长度，直接数据结构维护可以做到 <span
-class="math inline">\(O(n\log n)\)</span>（详细维护方法见例题）。</p>
-<hr />
-<p>上面就是扫描线的流程，也就是把直线离散化然后对于被两条相邻的线截开的区域用数据结构维护。</p>
-<h2 id="part-3-例题">Part 3 例题</h2>
-<h3 id="p5490-模板扫描线"><a
-href="https://www.luogu.com.cn/problem/P5490">P5490
-【模板】扫描线</a></h3>
-<p>就是上面的模板，然后用线段树维护。</p>
-<p>由于要维护当前覆盖层数 <span class="math inline">\(\geq 1\)</span>
-的点的个数，考虑记录区间 <span class="math inline">\(\min\)</span>
-值、区间 <span class="math inline">\(\min\)</span>
-值出现的线段的长度和区间不为 <span class="math inline">\(0\)</span>
-的所有线段的长度。</p>
-<p>这个显然是可以维护的，前两个直接搞。后面的那个如果区间 <span
-class="math inline">\(\min\)</span> 值为 <span
-class="math inline">\(0\)</span>，答案就是区间总长度 <span
-class="math inline">\(-\)</span> 区间 <span
-class="math inline">\(\min\)</span> 值的线段长度。</p>
-<p>如果区间 <span class="math inline">\(\min\)</span> 值不为 <span
-class="math inline">\(0\)</span>，答案就是区间总长度。</p>
-<p>时间复杂度：<span class="math inline">\(O(n\log n)\)</span>。</p>
-<h4 id="code">Code</h4>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;tuple&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> int long long</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> kMaxN = <span class="number">2e5</span> + <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n, m, k;</span><br><span class="line"><span class="type">int</span> x1[kMaxN], y1[kMaxN], x2[kMaxN], y2[kMaxN], b[kMaxN], lsh[kMaxN];</span><br><span class="line"><span class="type">int</span> sum[kMaxN &lt;&lt; <span class="number">2</span>], mini[kMaxN &lt;&lt; <span class="number">2</span>], cnt[kMaxN &lt;&lt; <span class="number">2</span>], tag[kMaxN &lt;&lt; <span class="number">2</span>];</span><br><span class="line">std::vector&lt;std::tuple&lt;<span class="type">int</span>, <span class="type">int</span>, <span class="type">int</span>&gt;&gt; v[kMaxN];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">discrete</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::<span class="built_in">sort</span>(b + <span class="number">1</span>, b + <span class="number">1</span> + m), std::<span class="built_in">sort</span>(lsh + <span class="number">1</span>, lsh + <span class="number">1</span> + k);</span><br><span class="line">  m = std::<span class="built_in">unique</span>(b + <span class="number">1</span>, b + <span class="number">1</span> + m) - (b + <span class="number">1</span>);</span><br><span class="line">  k = std::<span class="built_in">unique</span>(lsh + <span class="number">1</span>, lsh + <span class="number">1</span> + k) - (lsh + <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    y1[i] = std::<span class="built_in">lower_bound</span>(lsh + <span class="number">1</span>, lsh + <span class="number">1</span> + k, y1[i]) - lsh;</span><br><span class="line">    y2[i] = std::<span class="built_in">lower_bound</span>(lsh + <span class="number">1</span>, lsh + <span class="number">1</span> + k, y2[i]) - lsh;</span><br><span class="line">    v[std::<span class="built_in">lower_bound</span>(b + <span class="number">1</span>, b + <span class="number">1</span> + m, x1[i]) - b].<span class="built_in">emplace_back</span>(y1[i], y2[i], <span class="number">1</span>);</span><br><span class="line">    v[std::<span class="built_in">lower_bound</span>(b + <span class="number">1</span>, b + <span class="number">1</span> + m, x2[i]) - b].<span class="built_in">emplace_back</span>(y1[i], y2[i], <span class="number">-1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pushup</span><span class="params">(<span class="type">int</span> x)</span> </span>&#123;</span><br><span class="line">  sum[x] = sum[x &lt;&lt; <span class="number">1</span>] + sum[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>];</span><br><span class="line">  <span class="keyword">if</span> (mini[x &lt;&lt; <span class="number">1</span>] &lt; mini[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>]) &#123;</span><br><span class="line">    mini[x] = mini[x &lt;&lt; <span class="number">1</span>], cnt[x] = cnt[x &lt;&lt; <span class="number">1</span>];</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (mini[x &lt;&lt; <span class="number">1</span>] &gt; mini[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>]) &#123;</span><br><span class="line">    mini[x] = mini[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>], cnt[x] = cnt[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>];</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    mini[x] = mini[x &lt;&lt; <span class="number">1</span>], cnt[x] = cnt[x &lt;&lt; <span class="number">1</span>] + cnt[x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">addtag</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> v)</span> </span>&#123;</span><br><span class="line">  tag[x] += v, mini[x] += v;</span><br><span class="line">  <span class="keyword">if</span> (mini[x]) sum[x] = lsh[r + <span class="number">1</span>] - lsh[l];</span><br><span class="line">  <span class="keyword">else</span> sum[x] = lsh[r + <span class="number">1</span>] - lsh[l] - cnt[x];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pushdown</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> l, <span class="type">int</span> r)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!tag[x]) <span class="keyword">return</span>;</span><br><span class="line">  <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">  <span class="built_in">addtag</span>(x &lt;&lt; <span class="number">1</span>, l, mid, tag[x]), <span class="built_in">addtag</span>(x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r, tag[x]);</span><br><span class="line">  tag[x] = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">build</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> l, <span class="type">int</span> r)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (l == r) &#123;</span><br><span class="line">    cnt[x] = lsh[r + <span class="number">1</span>] - lsh[l];</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">  <span class="built_in">build</span>(x &lt;&lt; <span class="number">1</span>, l, mid), <span class="built_in">build</span>(x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r);</span><br><span class="line">  <span class="built_in">pushup</span>(x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">update</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> ql, <span class="type">int</span> qr, <span class="type">int</span> v)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (l &gt; qr || r &lt; ql) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (l &gt;= ql &amp;&amp; r &lt;= qr) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">addtag</span>(x, l, r, v);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">pushdown</span>(x, l, r);</span><br><span class="line">  <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">  <span class="built_in">update</span>(x &lt;&lt; <span class="number">1</span>, l, mid, ql, qr, v), <span class="built_in">update</span>(x &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r, ql, qr, v);</span><br><span class="line">  <span class="built_in">pushup</span>(x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dickdreamer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::cin &gt;&gt; n;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    std::cin &gt;&gt; x1[i] &gt;&gt; y1[i] &gt;&gt; x2[i] &gt;&gt; y2[i];</span><br><span class="line">    b[++m] = x1[i]; b[++m] = x2[i];</span><br><span class="line">    lsh[++k] = y1[i]; lsh[++k] = y2[i];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">discrete</span>();</span><br><span class="line">  <span class="type">long</span> <span class="type">long</span> ans = <span class="number">0</span>;</span><br><span class="line">  <span class="built_in">build</span>(<span class="number">1</span>, <span class="number">1</span>, k - <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; m; ++i) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> p : v[i]) &#123;</span><br><span class="line">      <span class="type">int</span> l = std::<span class="built_in">get</span>&lt;<span class="number">0</span>&gt;(p), r = std::<span class="built_in">get</span>&lt;<span class="number">1</span>&gt;(p), c = std::<span class="built_in">get</span>&lt;<span class="number">2</span>&gt;(p);</span><br><span class="line">      <span class="built_in">update</span>(<span class="number">1</span>, <span class="number">1</span>, k - <span class="number">1</span>, l, r - <span class="number">1</span>, c);</span><br><span class="line">    &#125;</span><br><span class="line">    ans += <span class="number">1ll</span> * (b[i + <span class="number">1</span>] - b[i]) * sum[<span class="number">1</span>];</span><br><span class="line">  &#125;</span><br><span class="line">  std::cout &lt;&lt; ans &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int32_t</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>), std::cin.<span class="built_in">tie</span>(<span class="number">0</span>), std::cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="type">int</span> T = <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// cin &gt;&gt; T;</span></span><br><span class="line">  <span class="keyword">while</span> (T--) <span class="built_in">dickdreamer</span>();</span><br><span class="line">  <span class="comment">// std::cerr &lt;&lt; 1.0 * clock() / CLOCKS_PER_SEC &lt;&lt; &#x27;s&#x27; &lt;&lt; endl;</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>未完待续.......</p>
-]]></content>
-      <categories>
-        <category>学习笔记</category>
-        <category>计算几何</category>
-        <category>扫描线</category>
-      </categories>
-      <tags>
-        <tag>数据结构</tag>
-        <tag>线段树</tag>
-        <tag>学习笔记</tag>
-        <tag>计算几何</tag>
-        <tag>扫描线</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>P7987 [USACO21DEC] Paired Up G 题解</title>
-    <url>/2023/08/22/P7987-USACO21DEC-Paired-Up-G-%E9%A2%98%E8%A7%A3/</url>
-    <content><![CDATA[<h2 id="description">Description</h2>
-<p>数轴上总计有 <span class="math inline">\(N\)</span>（<span
-class="math inline">\(1\le N\le 10^5\)</span>）头奶牛。第 <span
-class="math inline">\(i\)</span> 头奶牛的位置为 <span
-class="math inline">\(x_i\)</span>（<span class="math inline">\(0 \leq
-x_i \leq 10^9\)</span>），而第 <span class="math inline">\(i\)</span>
-头奶牛的重量为 <span class="math inline">\(y_i\)</span>（<span
-class="math inline">\(1 \leq y_i \leq 10^4\)</span>）。</p>
-<p>根据 Farmer John 的信号，某些奶牛会组成对，使得</p>
-<ul>
-<li><p>每一对包含位置相差不超过 <span class="math inline">\(K\)</span>
-的两头不同的奶牛 <span class="math inline">\(a\)</span> 和 <span
-class="math inline">\(b\)</span>（<span class="math inline">\(1\le K\le
-10^9\)</span>）；也就是说，<span class="math inline">\(|x_a-x_b|\le
-K\)</span>。</p></li>
-<li><p>每一头奶牛要么包含在恰好一对中，要么不属于任何一对。</p></li>
-<li><p><strong>配对是极大的</strong>；也就是说，没有两头未配对的奶牛可以组成对。</p></li>
-</ul>
-<p>你需要求出未配对的奶牛的重量之和的可能的范围。具体地说，</p>
-<ul>
-<li>如果 <span
-class="math inline">\(T=1\)</span>，计算未配对的奶牛的最小重量和。</li>
-<li>如果 <span
-class="math inline">\(T=2\)</span>，计算未配对的奶牛的最大重量和。</li>
-</ul>
-<p><a href="https://www.luogu.com.cn/problem/P7987">link</a></p>
-<span id="more"></span>
-<h2 id="solution">Solution</h2>
-<p>先把位置排个序，如果是问最大值那么就每个数乘 <span
-class="math inline">\(-1\)</span>，最后取反即可。</p>
-<p>注意到如果把所有没有配对的奶牛删掉，剩下的奶牛一定满足相邻的位置差
-<span class="math inline">\(\leq k\)</span>。</p>
-<p>考虑 DP。</p>
-<p>设 <span class="math inline">\(f_{i,0/1}\)</span> 表示已经处理了
-<span class="math inline">\(1\sim i\)</span> 这些奶牛，删掉了 偶数/奇数
-头奶牛，删掉的奶牛的总和最小值，<span class="math inline">\(l\)</span>
-表示位置 <span class="math inline">\(&lt; x_i-k\)</span>
-的位置最大的奶牛，<span class="math inline">\(j=i\bmod 2\)</span>。</p>
-<p>然后就是分类讨论：</p>
-<ol type="1">
-<li><p><span class="math inline">\(1\sim i-1\)</span>
-<strong>剩下</strong>偶数个</p>
-<ul>
-<li><p><span class="math inline">\(i\)</span> 删掉</p>
-<p>那么 <span class="math inline">\(1\sim i\)</span>
-仍然剩下偶数个，并且上一个删掉的一定在 <span
-class="math inline">\(l\)</span> 之前，所以 <span
-class="math inline">\(f_{i,j}\leftarrow
-f_{l,1-j}+y_i\)</span>。</p></li>
-<li><p><span class="math inline">\(i\)</span> 不删</p>
-<p>那么 <span class="math inline">\(1\sim i\)</span>
-剩下奇数个，并且要满足 <span class="math inline">\(x_{i+1}-x_{i}\leq
-k\)</span>，因为这时候 <span class="math inline">\(i\)</span>
-是剩下的编号为奇数的奶牛，要和 <span class="math inline">\(i+1\)</span>
-之后的奶牛进行配对，一定要满足这个条件。所以 <span
-class="math inline">\(f_{i,1-j}\leftarrow
-f_{i-1,1-j}\)</span>。</p></li>
-</ul></li>
-<li><p><span class="math inline">\(1\sim i-1\)</span>
-<strong>剩下</strong>奇数个</p>
-<ul>
-<li><p><span class="math inline">\(i\)</span> 删掉</p>
-<p>上一个删掉的一定在 <span class="math inline">\(l\)</span>
-之前，并且这时 <span class="math inline">\(i-1\)</span> 要和 <span
-class="math inline">\(i+1\)</span> 之后的奶牛进行配对，所以要满足 <span
-class="math inline">\(x_{i+1}-x_{i-1}\leq k\)</span>。那么 <span
-class="math inline">\(f_{i,1-j}\leftarrow
-f_{l,j}+y_i\)</span>。</p></li>
-<li><p><span class="math inline">\(i\)</span> 不删</p>
-<p>那么 <span class="math inline">\(1\sim i\)</span> 剩下偶数个，并且
-<span class="math inline">\(i\)</span> 和 <span
-class="math inline">\(i-1\)</span> 及之前的要配对，所以满足 <span
-class="math inline">\(x_{i}-x_{i-1}\leq k\)</span> 才可以转移，则 <span
-class="math inline">\(f_{i,j}\leftarrow f_{i-1,j}\)</span>。</p></li>
-</ul></li>
-</ol>
-<p>时间复杂度：<span class="math inline">\(O(n)\)</span>。</p>
-<hr />
-<p>其实仔细思考会发现上面状态转移的条件只是<strong>必要</strong>的，不够<strong>充分</strong>，下面证明下各个转移的条件放到一起为啥就对了。</p>
-<p>先假设 <span class="math inline">\(1\sim i-1\)</span>
-的条件都是正确的，那么 2,2 里面如果不满足 <span
-class="math inline">\(x_i-x_{i-1}\leq k\)</span>，显然 <span
-class="math inline">\(i\)</span>
-前面那个没被删的就找不到和他配对的了。满足了 <span
-class="math inline">\(x_{i}-x_{i-1}\leq
-k\)</span>，状态就相当于转化为“<span class="math inline">\(1\sim
-i-1\)</span>，<strong>剩下</strong>了奇数个奶牛”，也就是状态 1.2 和
-2.1，1.2 的条件满足了 <span class="math inline">\(i-1\)</span>
-不删的情况。2.1 由于 <span
-class="math inline">\(x_l&lt;x_{i-1}-k\)</span>，所以 <span
-class="math inline">\(l+1\sim i-2\)</span> 都没删，所以 <span
-class="math inline">\(1\sim i-1\)</span> 那个编号最大的没删的一定是
-<span class="math inline">\(i-2\)</span>，所以 <span
-class="math inline">\(i-2\)</span> 要与 <span
-class="math inline">\(i\)</span> 配对，条件就派上了用场。</p>
-<p>然后是 1.2，如果不满足 <span class="math inline">\(x_{i+1}-x_i\leq
-k\)</span>，<span class="math inline">\(i\)</span>
-就找不到他后面的奶牛了，显然不行。满足了 <span
-class="math inline">\(x_{i+1}-x_i\leq k\)</span>，相当于钦定 <span
-class="math inline">\(i\)</span> 能找到后面的，那么 <span
-class="math inline">\(f_{i-1,1-j}\)</span> 就可以直接转移了。</p>
-<p>最后是 2.1，由 2.2 的分析可知 <span class="math inline">\(1\sim
-i\)</span> 里面最后的一个没删的奶牛一定是 <span
-class="math inline">\(i-1\)</span>，钦定他能找到后面的，就可以直接转移。</p>
-<p>综上所述，1.2 和 2.1 相当于钦定后面满足的条件，然后 2.2
-的条件刚好符合 1.2 和 2.1 所钦定的条件，即可转移得万无一失。</p>
-<h2 id="code">Code</h2>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> int int64_t</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> kMaxN = <span class="number">1e5</span> + <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> t, n, k, op = <span class="number">1</span>;</span><br><span class="line"><span class="type">int</span> f[kMaxN][<span class="number">2</span>];</span><br><span class="line">std::pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt; a[kMaxN];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dickdreamer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::cin &gt;&gt; t &gt;&gt; n &gt;&gt; k;</span><br><span class="line">  <span class="keyword">if</span> (t == <span class="number">2</span>) op = <span class="number">-1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    std::cin &gt;&gt; a[i].first &gt;&gt; a[i].second;</span><br><span class="line">    a[i].second *= op;</span><br><span class="line">  &#125;</span><br><span class="line">  std::<span class="built_in">sort</span>(a + <span class="number">1</span>, a + <span class="number">1</span> + n);</span><br><span class="line">  <span class="built_in">memset</span>(f, <span class="number">0x3f</span>, <span class="built_in">sizeof</span>(f));</span><br><span class="line">  f[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">  a[<span class="number">0</span>].first = <span class="number">-1e12</span>, a[n + <span class="number">1</span>].first = <span class="number">1e12</span>;</span><br><span class="line">  <span class="type">int</span> lst = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">    <span class="keyword">for</span> (; a[lst + <span class="number">1</span>].first &lt; a[i].first - k; ++lst) &#123;&#125;</span><br><span class="line">    <span class="type">int</span> j = (i &amp; <span class="number">1</span>);</span><br><span class="line">    f[i][j] = std::<span class="built_in">min</span>(f[i][j], f[lst][j ^ <span class="number">1</span>] + a[i].second);</span><br><span class="line">    <span class="keyword">if</span> (a[i + <span class="number">1</span>].first - a[i].first &lt;= k) f[i][j ^ <span class="number">1</span>] = std::<span class="built_in">min</span>(f[i][j ^ <span class="number">1</span>], f[i - <span class="number">1</span>][j ^ <span class="number">1</span>]);</span><br><span class="line">    <span class="keyword">if</span> (a[i + <span class="number">1</span>].first - a[i - <span class="number">1</span>].first &lt;= k) f[i][j ^ <span class="number">1</span>] = std::<span class="built_in">min</span>(f[i][j ^ <span class="number">1</span>], f[lst][j] + a[i].second);</span><br><span class="line">    <span class="keyword">if</span> (a[i].first - a[i - <span class="number">1</span>].first &lt;= k) f[i][j] = std::<span class="built_in">min</span>(f[i][j], f[i - <span class="number">1</span>][j]);</span><br><span class="line">  &#125;</span><br><span class="line">  std::cout &lt;&lt; f[n][n &amp; <span class="number">1</span>] * op &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int32_t</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> ORZXKR</span></span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;in.txt&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">  <span class="built_in">freopen</span>(<span class="string">&quot;out.txt&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">  std::ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>), std::cin.<span class="built_in">tie</span>(<span class="number">0</span>), std::cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="type">int</span> T = <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// std::cin &gt;&gt; T;</span></span><br><span class="line">  <span class="keyword">while</span> (T--) <span class="built_in">dickdreamer</span>();</span><br><span class="line">  <span class="comment">// std::cerr &lt;&lt; 1.0 * clock() / CLOCKS_PER_SEC &lt;&lt; &quot;s\n&quot;;</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>题解</category>
-        <category>DP</category>
-      </categories>
-      <tags>
-        <tag>题解</tag>
-        <tag>USACO</tag>
-        <tag>DP</tag>
       </tags>
   </entry>
 </search>
